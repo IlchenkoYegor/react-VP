@@ -31,10 +31,11 @@ function App() {
   }
   let authState ={auth : authState1,
   stateHook: changeState}
+  changeState.bind(authState);
   
   return (
     <div>
-    <Button onClick={authState.stateHook.apply('admin')}>
+    <Button onClick={authState.stateHook('admin')}>
       test button 
     </Button>
     <AuthContext.Provider value = {authState} >
@@ -47,6 +48,8 @@ function App() {
         <Route path='/login' element={<Login/>}>
         </Route>
         <Route path='/map' element={<Map/>}>
+        </Route>
+        <Route path='/main' element={<Main/>}>
         </Route>
       </Routes>
       </AuthContext.Provider>

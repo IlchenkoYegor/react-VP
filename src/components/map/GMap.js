@@ -1,5 +1,5 @@
 import React from 'react'
-import { GoogleMap } from '@react-google-maps/api'
+import { GoogleMap, Marker } from '@react-google-maps/api'
 import { useJsApiLoader } from '@react-google-maps/api';
 import s from './Map.module.css'
 const API_KEY = process.env.REACT_APP_API_KEY;
@@ -10,7 +10,30 @@ const containerStyle = {
 };
 
 
+
 function GMap({center}) {
+  const somePoints = [
+    {
+      lat: -3.745,
+      lng: -38.523
+    },
+    
+    {
+      lat: -3.743,
+      lng: -38.524
+    },
+    
+    {
+      lat: -3.744,
+      lng: -38.521
+    },
+    
+    {
+      lat: -3.740,
+      lng: -38.523
+    },
+    
+  ]
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: API_KEY
@@ -34,6 +57,7 @@ function GMap({center}) {
       >
         { /* Child components, such as markers, info windows, etc. */ }
         <></>
+        {somePoints.map(e=>{return <Marker position={e}></Marker>})}
       </GoogleMap>
       </div>
       :

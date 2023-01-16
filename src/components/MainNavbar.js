@@ -3,18 +3,15 @@ import {Nav, Navbar, Container, Button} from 'react-bootstrap'
 import { Link } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 
-export default function MainNavbar() {
+export default function MainNavbar({isAuthorized}) {
   return (    
     
         <Navbar bg='light' expand='lg'>
         <Container>
-            <Navbar.Brand href="#">
+            <Navbar.Brand href="/main">
                 Myhac
             </Navbar.Brand>
-            <AuthContext.Consumer>
-            {
-                authent => (
-                authent.auth.authorized?
+                {isAuthorized ?
                     <Nav>
                     <Nav.Link as={Link} to='/map'>
                         Map
@@ -39,11 +36,10 @@ export default function MainNavbar() {
                         </Nav.Link>
                         
                     </Nav>
-                )
-                } 
-                </AuthContext.Consumer>
-            </Container>
+                
+                }
+                 </Container>
         </Navbar>
-       
   )
+       
 }

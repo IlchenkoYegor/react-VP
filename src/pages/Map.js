@@ -1,6 +1,7 @@
 import React from 'react'
 import { Col, Container, Row } from 'react-bootstrap'
 import GMap from '../components/map/GMap'
+import MapInterface from '../components/MapInterface';
 
 export default function Map() {
   const center = {
@@ -11,7 +12,7 @@ export default function Map() {
   return (
     <Row>
     <Col>
-      <div>Map</div>
+      <MapInterface></MapInterface>
     </Col>
     <Col xs={9}>
       <GMap center={center}></GMap>
