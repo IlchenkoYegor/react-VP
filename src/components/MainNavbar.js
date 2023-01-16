@@ -33,10 +33,8 @@ export default function MainNavbar({isAuthorized}) {
                         </Nav.Link>
                         <Nav.Link as={Link} to='/register'>
                             Sign up  
-                        </Nav.Link>
-                        
+                        </Nav.Link>  
                     </Nav>
-                
                 }
                  </Container>
         </Navbar>
