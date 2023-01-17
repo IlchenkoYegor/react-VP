@@ -15,32 +15,25 @@ import Map from './pages/Map';
 
 
 function App() {
-
-
-  let authState1 ={authorized: false, role:'guest'}
-  let changeState  = (roleg) =>{
-    if(roleg==null){
+  const [authState, setAuthState]= React.useState({authorized: false, role:'guest'});
+  let changeState  = () =>{
+    if(authState == null || authState.authorized){
     
-      console.log('here was a ' + roleg )
-      authState1 ={authorized: false, role:'guest'}
+      console.log('here was a ' + authState )
+      setAuthState({authorized: false, role:'guest'})
     }
     else{
-      console.log('here was a ' + roleg )
-      authState1 = {authorized: true, role:roleg}
+      console.log('here was a ' + authState )
+      setAuthState({authorized: true, role:'user'})
     }
   }
-  let authState ={auth : authState1,
-  stateHook: changeState}
-  changeState.bind(authState);
   
   return (
     <div>
-    <Button onClick={authState.stateHook('admin')}>
+    <Button onClick={changeState}>
       test button 
-    </Button>
-    <AuthContext.Provider value = {authState} >
-      
-      <MainNavbar></MainNavbar>
+    </Button>    
+      <MainNavbar isAuthorized={authState.authorized}></MainNavbar>
       <Routes>
         <Route path='/' element ={<Main/>}/>
         <Route path='/register' element={<Register/>}>
@@ -52,7 +45,6 @@ function App() {
         <Route path='/main' element={<Main/>}>
         </Route>
       </Routes>
-      </AuthContext.Provider>
       </div>
   );
 }

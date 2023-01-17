@@ -12,5 +12,6 @@ export default function MapInterface() {
         <RequestAFittingPointsButton className='mb-3'>find the most fitting points</RequestAFittingPointsButton>
         <SendResultsButton>send selected locations</SendResultsButton>
     </div>
+    
   )
 }
