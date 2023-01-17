@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import MainNavbar from './components/MainNavbar';
 import { Button } from 'react-bootstrap';
 import Map from './pages/Map';
+import CityChoose from './pages/CityChoose';
 
 
 
@@ -43,6 +44,9 @@ function App() {
         <Route path='/map' element={<Map/>}>
         </Route>
         <Route path='/main' element={<Main/>}>
+        </Route>
+        <Route path='/city' element={<CityChoose/>}>
+
         </Route>
       </Routes>
       </div>
