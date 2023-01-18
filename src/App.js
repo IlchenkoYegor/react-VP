@@ -12,8 +12,8 @@ import MainNavbar from './components/MainNavbar';
 import { Button } from 'react-bootstrap';
 import Map from './pages/Map';
 import CityChoose from './pages/CityChoose';
-
-
+import { Provider } from 'react-redux';
+import store from './store';
 
 function App() {
   const [authState, setAuthState]= React.useState({authorized: false, role:'guest'});
@@ -30,26 +30,28 @@ function App() {
   }
   
   return (
-    <div>
-    <Button onClick={changeState}>
-      test button 
-    </Button>    
-      <MainNavbar isAuthorized={authState.authorized}></MainNavbar>
-      <Routes>
-        <Route path='/' element ={<Main/>}/>
-        <Route path='/register' element={<Register/>}>
-        </Route>
-        <Route path='/login' element={<Login/>}>
-        </Route>
-        <Route path='/map' element={<Map/>}>
-        </Route>
-        <Route path='/main' element={<Main/>}>
-        </Route>
-        <Route path='/city' element={<CityChoose/>}>
+    <Provider store={store}>
+      <div>
+      <Button onClick={changeState}>
+        test button 
+      </Button>    
+        <MainNavbar isAuthorized={authState.authorized}></MainNavbar>
+        <Routes>
+          <Route path='/' element ={<Main/>}/>
+          <Route path='/register' element={<Register/>}>
+          </Route>
+          <Route path='/login' element={<Login/>}>
+          </Route>
+          <Route path='/map' element={<Map/>}>
+          </Route>
+          <Route path='/main' element={<Main/>}>
+          </Route>
+          <Route path='/city' element={<CityChoose/>}>
 
-        </Route>
-      </Routes>
-      </div>
+          </Route>
+        </Routes>
+        </div>
+      </Provider>
   );
 }
 
