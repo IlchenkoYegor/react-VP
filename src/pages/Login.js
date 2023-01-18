@@ -1,16 +1,35 @@
+import axios from 'axios';
 import React, { useState } from 'react'
-import { Button, Tab, Col, Container, Form, FormGroup, Row } from 'react-bootstrap'
+import { Button, Tab, Col, Container, Form, FormGroup, Row, FormText } from 'react-bootstrap'
+
+const HOSTA = "http://localhost:8080";
 
 export default function Login() {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
+  const [success, setSuccess] = useState(true);
   const onSubmit = async (e) =>{
     e.preventDefault();
     const loginForm = {
       username: username,
       password: password  
     }
-    console.log(loginForm);
+    const options = {
+      headers:{
+        "Content-Type": "application/json"
+      }
+    }
+    let response = {
+      success: false,
+      token: null
+    }
+    let result = axios.post(HOSTA+"/api/user/login", loginForm, options);
+    response = result.then(e => e.data).catch(e=> console.log("error occured" + e))
+    if(!response.success){
+       setSuccess(false);
+    }else{
+       setSuccess(true);
+    }
   }
 
   return (
@@ -37,6 +56,10 @@ export default function Login() {
             <Form.Label>enter password</Form.Label>
             <Form.Control type='password' onChange={e => setPassword(e.target.value)} placeholder='password'></Form.Control>
           </FormGroup>
+
+          <FormText hidden={success} className="alert alert-danger">
+            some trouble with login occured
+          </FormText>
           <Button type='submit' >login</Button>
       </Form>
       </Col>    

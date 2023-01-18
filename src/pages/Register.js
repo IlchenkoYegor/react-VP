@@ -34,7 +34,7 @@ export default function Register() {
     }}
     let result = axios.post("http://localhost:8080/api/user/register", register, options);
     result.then(e => {console.log("all is ok "+ e.data)
-                      })
+                      }).catch(e => console.log("Error"+ e))
   }
 
   function validateAndSetPassword(e){
