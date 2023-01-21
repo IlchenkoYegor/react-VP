@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { GoogleMap, Marker } from '@react-google-maps/api'
 import { useJsApiLoader } from '@react-google-maps/api';
 import s from './Map.module.css'
@@ -17,7 +17,11 @@ const containerStyle = {
 
 const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation}) => {
   const dispatch = useDispatch();
-  const anotherPoints=  dispatch(getAllPointsByCity("Sumy", Date.now))
+  useEffect(() => {
+    const s = async () => dispatch(getAllPointsByCity("Sumy", Date.now()));
+    s()
+    },
+  [])
   const somePoints = [
     {
       lat: -3.745,

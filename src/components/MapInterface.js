@@ -16,6 +16,13 @@ function MapInterface({errors}) {
     e.preventDefault();
     console.log("http://localhost:8000/sendPoints");
   }
+  
+  // const checkTheMapErrors = () =>{
+  //     if(!errors){
+  //       return errors
+  //     }
+  //     if(errors.)
+  // }
 
   function onAmountChange(e){
     setAmount(e.target.value);
