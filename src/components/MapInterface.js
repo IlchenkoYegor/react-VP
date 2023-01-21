@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Form } from 'react-bootstrap'
+import { Alert, Form } from 'react-bootstrap'
+import { connect } from 'react-redux';
 import RequestAFittingPointsButton from './RequestAFittingPointsButton'
 import SendResultsButton from './SendResultsButton'
 
 
-export default function MapInterface() {
+function MapInterface({errors}) {
   const [amount, setAmount] = useState();
   function onSubmitMostFitting(e){
       e.preventDefault();
@@ -21,7 +22,8 @@ export default function MapInterface() {
   }  
 
   return (
-       <div> 
+       <div>
+       {errors &&<Alert key='warning' variant='warning'>error occured </Alert>} 
     <div className='text-center '>Map</div>
     <p className='mb-3 mt-3 ml-3'>From here you can point the destination of aid trucks, using the information from polling and start the polling</p>
     <p className='mb-3'>But firstly you have to choose the city where you wish to set the aid centers</p>
@@ -40,3 +42,11 @@ export default function MapInterface() {
     
   )
 }
+
+const mapStateToProps = state =>{
+  return {
+    errors: state.errors
+  }
+}
+
+export default connect(mapStateToProps, null)(MapInterface)

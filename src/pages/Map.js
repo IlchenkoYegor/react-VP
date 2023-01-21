@@ -1,5 +1,6 @@
 import React from 'react'
-import { Col, Container, Row } from 'react-bootstrap'
+import { Alert, Col, Container, Row } from 'react-bootstrap'
+import { connect } from 'react-redux';
 import GMap from '../components/map/GMap'
 import MapInterface from '../components/MapInterface';
 
@@ -15,9 +16,11 @@ export default function Map() {
       <MapInterface></MapInterface>
     </Col>
     <Col xs={9}>
-      <GMap center={center}></GMap>
+      <GMap></GMap>
     </Col>
     </Row>
     
-  )
+)
 }
+
+
