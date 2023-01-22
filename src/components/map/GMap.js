@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { GoogleMap, Marker } from '@react-google-maps/api'
 import { useJsApiLoader } from '@react-google-maps/api';
 import s from './Map.module.css'
@@ -16,12 +16,8 @@ const containerStyle = {
 
 
 const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation}) => {
-  const dispatch = useDispatch();
-  useEffect(() => {
-    const s = async () => dispatch(getAllPointsByCity("Sumy", Date.now()));
-    s()
-    },
-  [])
+
+  //[])
   const somePoints = [
     {
       lat: -3.745,
@@ -64,6 +60,8 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
   const onUnmount = React.useCallback(function callback() {
     mapRef.current = undefined;
   }, [])
+  const dispatch = useDispatch();
+  dispatch(getAllPointsByCity("Sumy", Date.now()));
   return (
     isLoaded?<div className={s.container}>
     <GoogleMap
@@ -73,7 +71,7 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
         onZoomChanged={null}
         onLoad={onLoad}
         onUnmount={onUnmount}
-        onDblClick = {onMapClick}
+        onClick = {onMapClick}
       >
         { /* Child components, such as markers, info windows, etc. */ }
         <></>
@@ -95,7 +93,6 @@ const mapStateToProps = state =>{
     amountOfPoints: state.mapPoints.amountOfPoints,
     amountOfSelectedLocations: state.mapPoints.amountOfSelectedLocations,
     center: state.mapPoints.center,
-    errors: state.errors
   }
 }
 

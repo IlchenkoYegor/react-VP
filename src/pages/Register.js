@@ -1,11 +1,12 @@
-import axios, { Axios, AxiosHeaders } from 'axios';
 import React, {useState} from 'react'
-import { Button, Col, Container, Form, FormGroup, Row } from 'react-bootstrap'
+import { Alert, Button, Col, Container, Form, FormGroup, Row } from 'react-bootstrap'
+import { connect, useDispatch } from 'react-redux';
+import { createNewUser } from '../actions/securityActions';
+import { isEmpty } from '../isEmpty';
 
 
-export default function Register() {
-
-  
+function Register({history,errors,createNewUser}) {
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [emailValid, setEmailValid] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -22,19 +23,22 @@ export default function Register() {
 
   const onSubmit = async e =>{
     e.preventDefault();
+    
     const register = {
       username: email,
       firstName: firstName,
       secondName: secondName,
       password: password,
       repeatPassword: confirmPassword
-    } 
-    let options = {headers: {
-        "Content-Type": "application/json"
-    }}
-    let result = axios.post("http://localhost:8080/api/user/register", register, options);
-    result.then(e => {console.log("all is ok "+ e.data)
-                      }).catch(e => console.log("Error"+ e))
+    }
+    createNewUser(register,history);
+    // let options = {headers: {
+    //     "Content-Type": "application/json"
+    // }}
+    
+    //let result = axios.post("http://localhost:8080/api/user/register", register, options);
+    // result.then(e => {console.log("all is ok "+ e.data)
+    //                   }).catch(e => console.log("Error"+ e))
   }
 
   function validateAndSetPassword(e){
@@ -44,10 +48,13 @@ export default function Register() {
   }
 
   function validateAndSetEmail(e){
-    //var regularExpression = /^[a-zA-Z0-9]{2,}(?=.[@])[a-z]{2,9}({1,3}=.*[.])}$/;    
+    var regularExpression = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     //TODO: Realize the regex mechanism to validate email
-    
-    setEmailValid(true);
+    if(regularExpression.test( e.toLowerCase())){
+      setEmailValid(true);
+    }else{
+      setEmailValid(false);
+    }
     setEmail(e);
   }
 
@@ -70,6 +77,7 @@ export default function Register() {
     <Row>
       <h1 className='text-center mt-4'>Register!</h1>
     </Row>
+    {isEmpty(errors) && <Row><Alert key='warning' variant='warning' >error with registration occured {Object.keys(errors).length}</Alert></Row>}
     <Row>
     <Col></Col>
     <Col xs='8'>
@@ -98,7 +106,7 @@ export default function Register() {
 
     <FormGroup className='mb-3'>
     <Form.Label>Confirm password</Form.Label>
-      <Form.Control type='password' onChange={e => setConfirmPassword(e.target.value)}></Form.Control>
+      <Form.Control type='password' onChange={e => setConfirmPassword(e.target.value)} ></Form.Control>
       <Form.Text>confirm your password, enter it again</Form.Text>
     </FormGroup>
     <Button type='submit' disabled={!validated()}> Submit </Button>
@@ -111,3 +119,9 @@ export default function Register() {
     
   )
 }
+
+const mapStateToProps = state =>({
+  errors:state.errors
+})
+
+export default connect(mapStateToProps,{createNewUser})(Register)

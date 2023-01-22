@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Alert, Form } from 'react-bootstrap'
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import { isEmpty } from '../isEmpty';
 import RequestAFittingPointsButton from './RequestAFittingPointsButton'
 import SendResultsButton from './SendResultsButton'
+import { getAllPointsByCity } from '../actions/mapActions';
 
 
 function MapInterface({errors}) {
@@ -27,17 +29,18 @@ function MapInterface({errors}) {
   function onAmountChange(e){
     setAmount(e.target.value);
   }  
-
+  const dispatch = useDispatch();
+  
   return (
        <div>
-       {errors &&<Alert key='warning' variant='warning'>error occured </Alert>} 
+       {isEmpty(errors) &&<Alert key='warning' variant='warning'>error occured </Alert>} 
     <div className='text-center '>Map</div>
     <p className='mb-3 mt-3 ml-3'>From here you can point the destination of aid trucks, using the information from polling and start the polling</p>
     <p className='mb-3'>But firstly you have to choose the city where you wish to set the aid centers</p>
         <Form onSubmit={onSubmitMostFitting}>
           <button className='btn mb-3'>find the most fitting points</button>
           </Form>
-          <Form onSubmit={onSubmitMostSendSelected}>
+          <Form onSubmit={e=>{}}>
           <button className='btn mt-3 ml-3'>send selected locations</button>
         </Form>
         <Form>
@@ -53,7 +56,8 @@ function MapInterface({errors}) {
 const mapStateToProps = state =>{
   return {
     errors: state.errors
+
   }
 }
 
-export default connect(mapStateToProps, null)(MapInterface)
+export default connect(mapStateToProps, {getAllPointsByCity})(MapInterface)
