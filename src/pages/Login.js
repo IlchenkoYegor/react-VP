@@ -1,35 +1,25 @@
 import axios from 'axios';
 import React, { useState } from 'react'
-import { Button, Tab, Col, Container, Form, FormGroup, Row, FormText } from 'react-bootstrap'
+import { Button, Tab, Col, Container, Form, FormGroup, Row, FormText, Alert } from 'react-bootstrap'
+import { connect } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import classNames from 'classnames';
+import { loginByCrid } from '../actions/securityActions';
+import { isNotEmpty } from '../isNotEmpty';
 
 const HOSTA = "http://localhost:8080";
-
-export default function Login() {
+ 
+function Login({errors, loginByCrid}) {
+  const navigate = useNavigate();
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
-  const [success, setSuccess] = useState(true);
   const onSubmit = async (e) =>{
     e.preventDefault();
     const loginForm = {
       username: username,
       password: password  
     }
-    const options = {
-      headers:{
-        "Content-Type": "application/json"
-      }
-    }
-    let response = {
-      success: false,
-      token: null
-    }
-    let result = axios.post(HOSTA+"/api/user/login", loginForm, options);
-    response = result.then(e => e.data).catch(e=> console.log("error occured" + e))
-    if(!response.success){
-       setSuccess(false);
-    }else{
-       setSuccess(true);
-    }
+    loginByCrid(loginForm, navigate);
   }
 
   return (
@@ -48,18 +38,17 @@ export default function Login() {
     <Col></Col>
     <Col>
       <Form onSubmit={onSubmit}>
+      {isNotEmpty(errors) && <Row><Alert key='warning' variant='warning' >Some error with login occured</Alert></Row>}
           <FormGroup className='mb-3 mt-3' controlId='emailForm'>
             <Form.Label>enter email</Form.Label>
-            <Form.Control type='email' placeholder='example@mail.com' onChange={e => setUsername(e.target.value)}></Form.Control>
+            <Form.Control type='email' placeholder='example@mail.com' className={classNames({"is-invalid":errors.username})} onChange={e => setUsername(e.target.value)}></Form.Control>
+            {errors.username && (<div className='invalid-feedback'>{errors.username}</div>)}
           </FormGroup>
           <FormGroup className='mb-3' controlId='passwordForm'>
             <Form.Label>enter password</Form.Label>
-            <Form.Control type='password' onChange={e => setPassword(e.target.value)} placeholder='password'></Form.Control>
-          </FormGroup>
-
-          <FormText hidden={success} className="alert alert-danger">
-            some trouble with login occured
-          </FormText>
+            <Form.Control type='password' onChange={e => setPassword(e.target.value)} className={classNames({"is-invalid":errors.password})} placeholder='password'></Form.Control>
+            {errors.password && (<div className='invalid-feedback'>{errors.password}</div>)}
+            </FormGroup>
           <Button type='submit' >login</Button>
       </Form>
       </Col>    
@@ -70,3 +59,9 @@ export default function Login() {
     </Container>
   )
 }
+
+const mapStateToProps = (state) => ({
+  errors: state.errors 
+})
+
+export default connect(mapStateToProps, {loginByCrid}) (Login)

@@ -14,6 +14,25 @@ import Map from './pages/Map';
 import CityChoose from './pages/CityChoose';
 import { Provider } from 'react-redux';
 import store from './store';
+import jwtDecode from 'jwt-decode';
+import setJWTToken from './securityUtils/setJWTToken';
+import { logout } from './actions/securityActions';
+import { SET_CURRENT_USER } from './actions/types';
+
+const jwtToken = localStorage.jwtToken
+
+if(jwtToken){
+  setJWTToken(jwtToken);
+  const decoded_jwt = jwtDecode(jwtToken)
+  store.dispatch({
+    type:SET_CURRENT_USER,
+    payload: decoded_jwt
+  })
+  const currentTime = Date.now()/1000
+  if(decoded_jwt.exp<currentTime){
+    store.dispatch(logout())
+  }
+}
 
 function App() {
   const [authState, setAuthState]= React.useState({authorized: false, role:'guest'});

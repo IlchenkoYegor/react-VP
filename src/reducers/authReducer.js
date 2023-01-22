@@ -1,18 +1,25 @@
 import axios from "axios"
-import { GET_ERRORS } from "../actions/types";
+import { SET_CURRENT_USER } from "../actions/types";
 
-export const createNewUser = (newUser, history)=> async dispatch => {
-    try{
-        await axios.post("/api/user/register", newUser);
-        history.push("/login");
-        dispatch({
-            type: GET_ERRORS,
-            payload: {}
-        })
-    }catch(err){
-        dispatch({
-            type: GET_ERRORS,
-            payload: err.response.data
-        })
+const initialState = {
+    user:{},
+    validToken:false
+}
+
+const booleanActionPayload = (payload)=>{
+    if(payload){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+export const authReducer = (state= initialState,action )=>{
+    switch(action.type){
+        case SET_CURRENT_USER:
+            return {...state, 
+            validToken: booleanActionPayload(action.payload),
+            user: action.payload}
+        default: return state;
     }
 }

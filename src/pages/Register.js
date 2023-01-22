@@ -1,12 +1,14 @@
+import classNames from 'classnames';
 import React, {useState} from 'react'
 import { Alert, Button, Col, Container, Form, FormGroup, Row } from 'react-bootstrap'
 import { connect, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { createNewUser } from '../actions/securityActions';
-import { isEmpty } from '../isEmpty';
+import { isNotEmpty } from '../isNotEmpty';
 
 
-function Register({history,errors,createNewUser}) {
-  const dispatch = useDispatch();
+function Register({errors,createNewUser}) {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [emailValid, setEmailValid] = useState(false);
   const [firstName, setFirstName] = useState("");
@@ -31,7 +33,7 @@ function Register({history,errors,createNewUser}) {
       password: password,
       repeatPassword: confirmPassword
     }
-    createNewUser(register,history);
+    createNewUser(register,navigate);
     // let options = {headers: {
     //     "Content-Type": "application/json"
     // }}
@@ -77,36 +79,41 @@ function Register({history,errors,createNewUser}) {
     <Row>
       <h1 className='text-center mt-4'>Register!</h1>
     </Row>
-    {isEmpty(errors) && <Row><Alert key='warning' variant='warning' >error with registration occured {Object.keys(errors).length}</Alert></Row>}
+    {isNotEmpty(errors) && <Row><Alert key='warning' variant='warning' >Some error with registration occured</Alert></Row>}
     <Row>
     <Col></Col>
     <Col xs='8'>
     <Form onSubmit={onSubmit}>
     <FormGroup className='mb-3 mt-3'>
       <Form.Label>Email</Form.Label>
-      <Form.Control type='email' onChange={e => validateAndSetEmail(e.target.value)} ></Form.Control>
+      <Form.Control type='email' onChange={e => validateAndSetEmail(e.target.value)} className={classNames({"is-invalid":errors.username})} ></Form.Control>
       <Form.Text style={!emailValid?{color:'red'}:{color:'black'}}>enter your email</Form.Text>
+      {errors.username && (<div className='invalid-feedback'>{errors.username}</div>)}
       </FormGroup>
     
     <FormGroup className='mb-3'>
       <Form.Label>First Name</Form.Label>
-      <Form.Control type='text' onChange={e => validateAndSetFirstName(e.target.value)}></Form.Control>
-      <Form.Text style={!firstNameValid?{color:'red'}:{color:'black'}}>enter your username</Form.Text>
-    </FormGroup>
+      <Form.Control type='text' className={classNames({"is-invalid":errors.firstName})} onChange={e => validateAndSetFirstName(e.target.value)}></Form.Control>
+      <Form.Text style={!firstNameValid?{color:'red'}:{color:'black'}}>enter your firstname</Form.Text>
+      {errors.firstName && (<div className='invalid-feedback'>{errors.firstName}</div>)}
+      </FormGroup>
     <FormGroup className='mb-3'>
       <Form.Label>Second Name</Form.Label>
-      <Form.Control type='text' onChange={e => validateAndSetSecondName(e.target.value)}></Form.Control>
-      <Form.Text style={!secondNameValid?{color:'red'}:{color:'black'}}>enter your username</Form.Text>
+      <Form.Control type='text' className={classNames({"is-invalid":errors.secondName})} onChange={e => validateAndSetSecondName(e.target.value)}></Form.Control>
+      {errors.secondName && (<div className='invalid-feedback'>{errors.secondName}</div>)}
+      <Form.Text style={!secondNameValid?{color:'red'}:{color:'black'}}>enter your secondname</Form.Text>
     </FormGroup>
     <FormGroup className='mb-3'>
     <Form.Label>Password</Form.Label>
-      <Form.Control type='password' onChange={e => validateAndSetPassword(e.target.value)}></Form.Control>
+      <Form.Control type='password' className={classNames({"is-invalid":errors.password})} onChange={e => validateAndSetPassword(e.target.value)}></Form.Control>
+      {errors.password && (<div className='invalid-feedback'>{errors.password}</div>)}
       <Form.Text style={!passwordValid?{color:'red'}:{color:'black'}}>enter your password, consider the fact that it should consist of at least 8 letters, 1 character, 1 digit </Form.Text>
     </FormGroup>
 
     <FormGroup className='mb-3'>
     <Form.Label>Confirm password</Form.Label>
-      <Form.Control type='password' onChange={e => setConfirmPassword(e.target.value)} ></Form.Control>
+      <Form.Control type='password' className={classNames({"is-invalid":errors.repeatPassword})} onChange={e => setConfirmPassword(e.target.value)} ></Form.Control>
+      {errors.repeatPassword && (<div className='invalid-feedback'>{errors.repeatPassword}</div>)}
       <Form.Text>confirm your password, enter it again</Form.Text>
     </FormGroup>
     <Button type='submit' disabled={!validated()}> Submit </Button>
