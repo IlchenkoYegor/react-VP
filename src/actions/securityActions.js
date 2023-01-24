@@ -60,6 +60,6 @@ export const logout = () => dispatch =>{
     setJWTToken(false);
     dispatch({
         type: SET_CURRENT_USER,
-        payload: {}
+        payload: null
     })
 }

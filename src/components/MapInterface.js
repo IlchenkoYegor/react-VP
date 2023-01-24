@@ -4,19 +4,19 @@ import { connect, useDispatch } from 'react-redux';
 import { isNotEmpty } from '../isNotEmpty';
 import RequestAFittingPointsButton from './RequestAFittingPointsButton'
 import SendResultsButton from './SendResultsButton'
-import { getAllPointsByCity } from '../actions/mapActions';
+import { setMaxLocationsAmount } from '../actions/mapActions';
+import { getAllPointsByCity } from '../actions/getPointsFromServerActions';
+import ModalComponent from './ModalComponent';
 
+function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount}) {
 
-function MapInterface({errors}) {
-  const [amount, setAmount] = useState();
   function onSubmitMostFitting(e){
       e.preventDefault();
-      console.log("http://localhost:8000/findLocation");
   }
 
   function onSubmitMostSendSelected(e){
     e.preventDefault();
-    console.log("http://localhost:8000/sendPoints");
+    
   }
   
   // const checkTheMapErrors = () =>{
@@ -27,11 +27,12 @@ function MapInterface({errors}) {
   // }
 
   function onAmountChange(e){
-    setAmount(e.target.value);
+    setMaxLocationsAmount(Number(e.target.value));
   }  
 
   return (
        <div>
+       {isNotEmpty(errors) && <ModalComponent error={errors}></ModalComponent>}
        {isNotEmpty(errors) &&<Alert key='warning' variant='warning'>error occured </Alert>} 
     <div className='text-center '>Map</div>
     <p className='mb-3 mt-3 ml-3'>From here you can point the destination of aid trucks, using the information from polling and start the polling</p>
@@ -45,7 +46,7 @@ function MapInterface({errors}) {
         <Form>
           <Form.Text>Enter the amount of points which you want to set</Form.Text>
           <Form.Range min={1} max={100} onChange={onAmountChange}></Form.Range>
-          <Form.Label className='ctr'>{amount}</Form.Label>
+          <Form.Label>{maxAmountOfPoints}</Form.Label>
         </Form>
     </div>
     
@@ -54,9 +55,9 @@ function MapInterface({errors}) {
 
 const mapStateToProps = state =>{
   return {
-    errors: state.errors
-
+    errors: state.errors,
+    maxAmountOfPoints: state.mapPoints.maxAvailablePoints
   }
 }
 
-export default connect(mapStateToProps, {getAllPointsByCity})(MapInterface)
+export default connect(mapStateToProps, {getAllPointsByCity, setMaxLocationsAmount})(MapInterface)

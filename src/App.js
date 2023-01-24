@@ -18,6 +18,7 @@ import jwtDecode from 'jwt-decode';
 import setJWTToken from './securityUtils/setJWTToken';
 import { logout } from './actions/securityActions';
 import { SET_CURRENT_USER } from './actions/types';
+import SecureRoute from './securityUtils/secureRoute';
 
 const jwtToken = localStorage.jwtToken
 
@@ -31,6 +32,7 @@ if(jwtToken){
   const currentTime = Date.now()/1000
   if(decoded_jwt.exp<currentTime){
     store.dispatch(logout())
+    window.location.href = "/";
   }
 }
 
@@ -61,12 +63,13 @@ function App() {
           </Route>
           <Route path='/login' element={<Login/>}>
           </Route>
-          <Route path='/map' element={<Map/>}>
-          </Route>
+          
+            <Route path='/map' element={<SecureRoute requeredRole="ADMIN"><Map/></SecureRoute>}>
+            </Route>
           <Route path='/main' element={<Main/>}>
           </Route>
-          <Route path='/city' element={<CityChoose/>}>
-
+          
+            <Route path='/city' element={<SecureRoute requeredRole="VOLUNTEER"><CityChoose/></SecureRoute>}>
           </Route>
         </Routes>
         </div>

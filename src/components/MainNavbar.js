@@ -6,14 +6,13 @@ import { logout } from '../actions/securityActions'
 import { connect } from 'react-redux'
 
 
-
 function MainNavbar({security,logout}) {
     function onLogout(){
        logout();
        window.location("/");
     }
 
-    const {validToken, user} = this.props.security;
+    const {validToken, user} = security;
     const userIsAuthenticated = (<Nav>
         <Nav.Link as={Link} to='/map'>
             Map

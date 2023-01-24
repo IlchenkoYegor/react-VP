@@ -5,7 +5,10 @@ import s from './Map.module.css'
 import { connect, useDispatch } from 'react-redux';
 import { mapReducer } from '../../reducers/mapReducer';
 import {setLocation} from "../../actions/mapActions"
-import { getAllPointsByCity } from '../../actions/mapActions';
+import { getAllPointsByCity } from '../../actions/getPointsFromServerActions';
+import { GET_ERRORS } from '../../actions/types';
+import { isNotEmpty } from '../../isNotEmpty';
+import ModalComponent from '../ModalComponent';
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 const containerStyle = {
@@ -15,7 +18,7 @@ const containerStyle = {
 
 
 
-const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation}) => {
+const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation, maxPoints, errors}) => {
 
   //[])
   const somePoints = [
@@ -51,19 +54,30 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
   }, [])
   console.log(center);
 
-  const onMapClick = (e)=>{
-    e.domEvent.preventDefault();
-    const latLong = e.latLng;
-    setLocation(latLong); 
-  }
+  
   
   const onUnmount = React.useCallback(function callback() {
     mapRef.current = undefined;
   }, [])
   const dispatch = useDispatch();
-  dispatch(getAllPointsByCity("Sumy", Date.now()));
+  dispatch(getAllPointsByCity("Sumy"));
+  const onMapClick = (e)=>{
+    e.domEvent.preventDefault();
+    if(selectedPoints<maxPoints){
+      const latLong = e.latLng;
+      setLocation(latLong); 
+    }else{
+      dispatch({
+        type:GET_ERRORS,
+        payload: {data: "you cannot modify add more points than you have set"}
+      })
+    }
+  }
+  console.log(errors);
   return (
-    isLoaded?<div className={s.container}>
+    isLoaded?
+    <div className={s.container}>
+    {isNotEmpty(errors) && <ModalComponent error={errors}></ModalComponent>}
     <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -92,7 +106,9 @@ const mapStateToProps = state =>{
     selectedPoints: state.mapPoints.selectedPoints,
     amountOfPoints: state.mapPoints.amountOfPoints,
     amountOfSelectedLocations: state.mapPoints.amountOfSelectedLocations,
-    center: state.mapPoints.center,
+    center: state.mapPoints.city.center,
+    maxPoints: state.mapPoints.maxAvailablePoints,
+    errors: state.errors
   }
 }
 
