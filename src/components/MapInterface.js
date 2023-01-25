@@ -4,30 +4,34 @@ import { connect, useDispatch } from 'react-redux';
 import { isNotEmpty } from '../isNotEmpty';
 import RequestAFittingPointsButton from './RequestAFittingPointsButton'
 import SendResultsButton from './SendResultsButton'
-import { createPoll, pushTheResult, setMaxLocationsAmount } from '../actions/mapActions';
+import { createPoll, getBestFittingPoints, pushTheResult, setMaxLocationsAmount } from '../actions/mapActions';
 import { getAllPointsByCity } from '../actions/getPointsFromServerActions';
 import ModalComponent from './ModalComponent';
 import { useCallback } from 'react';
 
-function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName, selectedLocations, username}) {
+function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName, selectedLocations, username, amountOfCurrentSelected}) {
 
   const [selectedMax, setSelectedMax] = React.useState(0);
 
   const dispatch = useDispatch();
 
-  const onSubmitMostFittingCbk = useCallback( function onSubmitMostFitting(e){
-      e.preventDefault();
-      dispatch(createPoll(cityName, null));
+  const onSubmitCreatePollCbk = useCallback( function onSubmitCreatePoll(e){
+    e.preventDefault();
+    dispatch(createPoll(cityName, null));
   },[cityName])
 
-  const onSubmitMostSendSelectedCbk = useCallback( function onSubmitMostSendSelected(e){
+  const onSubmitMostFittingCbk = useCallback( function onSubmitMostFitting(e){
+      e.preventDefault();
+      dispatch(getBestFittingPoints(amountOfCurrentSelected, cityName));
+  },[cityName, amountOfCurrentSelected])
+
+  const onSubmitPushResultCbk = useCallback( function onSubmitPushTheResult(e){
     e.preventDefault();
     if(maxAmountOfPoints>selectedLocations){
       return;
     }
-    
     dispatch(pushTheResult(selectedLocations,username,cityName,maxAmountOfPoints,null));
-  },[]
+  },[selectedLocations,username,cityName,maxAmountOfPoints]
   )
   
   // const checkTheMapErrors = () =>{
@@ -58,7 +62,10 @@ function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName
         <Form onSubmit={onSubmitMostFittingCbk}>
           <button className='btn mb-3'>find the most fitting points</button>
           </Form>
-          <Form onSubmit={onSubmitMostSendSelectedCbk}>
+          <Form onSubmit={onSubmitCreatePollCbk}>
+          <button className='btn mt-3 ml-3'>create poll</button>
+          </Form>
+          <Form onSubmit={onSubmitPushResultCbk}>
           <button className='btn mt-3 ml-3'>send selected locations</button>
         </Form>
       </Container>
