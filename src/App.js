@@ -37,26 +37,10 @@ if(jwtToken){
 }
 
 function App() {
-  const [authState, setAuthState]= React.useState({authorized: false, role:'guest'});
-  let changeState  = () =>{
-    if(authState == null || authState.authorized){
-    
-      console.log('here was a ' + authState )
-      setAuthState({authorized: false, role:'guest'})
-    }
-    else{
-      console.log('here was a ' + authState )
-      setAuthState({authorized: true, role:'user'})
-    }
-  }
-  
   return (
     <Provider store={store}>
-      <div>
-      <Button onClick={changeState}>
-        test button 
-      </Button>    
-        <MainNavbar isAuthorized={authState.authorized}></MainNavbar>
+      <div>   
+        <MainNavbar></MainNavbar>
         <Routes>
           <Route path='/' element ={<Main/>}/>
           <Route path='/register' element={<Register/>}>

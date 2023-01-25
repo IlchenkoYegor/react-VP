@@ -29,7 +29,7 @@ export default function ModalComponent({error}) {
           <Button variant="secondary" onClick={handleClose}>
             Close
           </Button>
-          <Button variant="primary">Understood</Button>
+          <Button variant="primary" onClick={handleClose}>Understood</Button>
         </Modal.Footer>
       </Modal>
     </>

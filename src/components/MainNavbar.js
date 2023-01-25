@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import AuthContext from '../context/AuthContext'
 import { logout } from '../actions/securityActions'
 import { connect } from 'react-redux'
+import { hasAuthorities } from '../securityUtils/hasAuthorities'
 
 
 function MainNavbar({security,logout}) {
@@ -14,12 +15,17 @@ function MainNavbar({security,logout}) {
 
     const {validToken, user} = security;
     const userIsAuthenticated = (<Nav>
+        {validToken && hasAuthorities(user, "ADMIN") &&
         <Nav.Link as={Link} to='/map'>
             Map
         </Nav.Link>
-        <Nav.Link as={Link} to='/city'>
-            Choose the city
-        </Nav.Link>
+        }
+        {validToken && hasAuthorities(user,"VOLUNTEER") &&
+            <Nav.Link as={Link} to='/city'>
+                Choose the city
+            </Nav.Link>
+        }
+        
         <Nav.Link as={Link} to='/main-info'>
             Additional info
         </Nav.Link>

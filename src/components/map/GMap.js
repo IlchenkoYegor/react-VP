@@ -4,11 +4,15 @@ import { useJsApiLoader } from '@react-google-maps/api';
 import s from './Map.module.css'
 import { connect, useDispatch } from 'react-redux';
 import { mapReducer } from '../../reducers/mapReducer';
-import {setLocation} from "../../actions/mapActions"
+import {setLocation, deleteLocation} from "../../actions/mapActions"
 import { getAllPointsByCity } from '../../actions/getPointsFromServerActions';
 import { GET_ERRORS } from '../../actions/types';
 import { isNotEmpty } from '../../isNotEmpty';
 import ModalComponent from '../ModalComponent';
+import CitizenLocationMarker from '../marker/CitizenLocationMarker';
+import SelectedLocationMarker from '../marker/SelectedLocationMarker';
+import { Alert, Container, Spinner } from 'react-bootstrap';
+import { useEffect } from 'react';
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 const containerStyle = {
@@ -18,31 +22,10 @@ const containerStyle = {
 
 
 
-const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation, maxPoints, errors}) => {
+const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation, maxPoints, errors, cityName}) => {
 
   //[])
-  const somePoints = [
-    {
-      lat: -3.745,
-      lng: -38.523
-    },
-    
-    {
-      lat: -3.743,
-      lng: -38.524
-    },
-    
-    {
-      lat: -3.744,
-      lng: -38.521
-    },
-    
-    {
-      lat: -3.740,
-      lng: -38.523
-    },
-    
-  ]
+
   console.log(amountOfPoints);
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
@@ -52,18 +35,21 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
   const onLoad = React.useCallback(function callback(map) {
     mapRef.current = map;
   }, [])
-  console.log(center);
+//  console.log(center);
 
-  
+  console.log(cityName)
   
   const onUnmount = React.useCallback(function callback() {
     mapRef.current = undefined;
   }, [])
   const dispatch = useDispatch();
-  dispatch(getAllPointsByCity("Sumy"));
+  const useFetching = (e) => useEffect(
+    () => {dispatch(e(cityName));},
+  [cityName]);
+  useFetching(getAllPointsByCity);
   const onMapClick = (e)=>{
     e.domEvent.preventDefault();
-    if(selectedPoints<maxPoints){
+    if(amountOfSelectedLocations<maxPoints){
       const latLong = e.latLng;
       setLocation(latLong); 
     }else{
@@ -73,11 +59,14 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
       })
     }
   }
-  console.log(errors);
+
+  const onMarkerClick = (coordinates) =>{
+      dispatch(deleteLocation(coordinates));
+  }
   return (
     isLoaded?
     <div className={s.container}>
-    {isNotEmpty(errors) && <ModalComponent error={errors}></ModalComponent>}
+    {errors.data && <Alert key='warning' variant='warning'><Container>{errors.data}</Container></Alert>}
     <GoogleMap
         mapContainerStyle={containerStyle}
         center={center}
@@ -87,15 +76,16 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
         onUnmount={onUnmount}
         onClick = {onMapClick}
       >
-        { /* Child components, such as markers, info windows, etc. */ }
+        { /* Child components, such as markers, info windows, etc.  onClick1={deleteLocation}*/}
         <></>
-        {amountOfPoints>0 && locationCoordinates.map(e=>{return <Marker position={e}></Marker>}) }
-        {amountOfSelectedLocations>0 && selectedPoints.map(e=>{return <Marker position={e}></Marker>}) }
+        {/* <CitizenLocationMarker position1={}></CitizenLocationMarker> */}
+        {amountOfPoints>0 && locationCoordinates.map(e=>{return <CitizenLocationMarker position={e} ></CitizenLocationMarker>}) }
+        {amountOfSelectedLocations>0 && selectedPoints.map(e=>{return <SelectedLocationMarker position1={e} onClick={click => onMarkerClick(e)} ></SelectedLocationMarker>}) }
       </GoogleMap>
       </div>
       :
       <div>
-      loading...
+      <Spinner></Spinner>
       </div>
   )
 }
@@ -107,13 +97,15 @@ const mapStateToProps = state =>{
     amountOfPoints: state.mapPoints.amountOfPoints,
     amountOfSelectedLocations: state.mapPoints.amountOfSelectedLocations,
     center: state.mapPoints.city.center,
+    cityName: state.mapPoints.city.name,
     maxPoints: state.mapPoints.maxAvailablePoints,
     errors: state.errors
   }
 }
 
 const actions = {
-  setLocation
+  setLocation,
+  deleteLocation
 }
 
 export default connect(  mapStateToProps,actions)(GMap)

@@ -1,4 +1,4 @@
-import { GET_BEST_SUITABLE_POINTS, GET_CITY, GET_POINTS, SET_CURRENT_USER, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS } from "../actions/types";
+import { DELETE_SUITABLE_POINT, GET_BEST_SUITABLE_POINTS,SET_CITY, SET_CURRENT_USER, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS } from "../actions/types";
 
 const initialState = {
     
@@ -22,9 +22,11 @@ export const mapReducer = (state = initialState, action) => {
                 return {...state, selectedPoints: state.selectedPoints.concat( action.payload), amountOfSelectedLocations: state.amountOfSelectedLocations+1};
             case SET_MAX_AMOUNT_OF_POINTS:
                 return {
-                    ...state, maxAvailablePoints: action.payload
+                    ...state,
+                     amountOfSelectedLocations: (state.amountOfSelectedLocations>action.payload)?action.payload:state.amountOfSelectedLocations,
+                      selectedPoints: state.selectedPoints.slice(0,action.payload) ,maxAvailablePoints: action.payload
                 }
-            case GET_CITY:
+            case SET_CITY:
                 return {
                     ...state, city:action.payload
                 }
@@ -32,6 +34,11 @@ export const mapReducer = (state = initialState, action) => {
                 return {
                     ...state, selectedPoints: action.payload, amountOfSelectedLocations: action.payload.length
                 };
+            case DELETE_SUITABLE_POINT:
+               
+                return {
+                    ...state, selectedPoints: state.selectedPoints.filter(e=>e.lat !== action.payload.lat && e.lng !== action.payload.lng), amountOfSelectedLocations : state.amountOfSelectedLocations-1, 
+                }
             default: return state;
             
         }
