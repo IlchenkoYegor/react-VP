@@ -1,12 +1,12 @@
 import axios from "axios";
 import { connect } from "react-redux";
-import { GET_ERRORS, SET_CITY, GET_POINTS, TAKE_DELAY, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS, SUCCESS_MESSAGE, DELETE_SUITABLE_POINT } from "./types";
+import { GET_ERRORS, SET_CITY, GET_POINTS, TAKE_DELAY, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS, SUCCESS_MESSAGE, DELETE_SUITABLE_POINT, GET_BEST_SUITABLE_POINTS, SET_NO_ERRORS } from "./types";
 
 const DELAYINMS = process.env.REACT_APP_API_KEY;
 
 export const createPoll = (cityName, history) => async dispatch =>{
     try {
-        const res = await axios.post("http://localhost:8080/admin/sendMessage", {city:cityName});
+        const res = await axios.get("http://localhost:8080/admin/sendMessage", {params:{city:cityName}});
         dispatch({
             type:SUCCESS_MESSAGE,
             payload: res.data
@@ -20,14 +20,21 @@ export const createPoll = (cityName, history) => async dispatch =>{
             type:GET_ERRORS,
             payload:err.response.data
         })
+        
+        new Promise((resolve, reject) => {setTimeout(() => resolve(),5000)}).then(()=>{
+            dispatch({
+                type:SET_NO_ERRORS
+            })
+        })
     }
 }
 
 export const pushTheResult = (coordinatesList,username, city, amountOfPoints, history) => async dispatch => {
     try{
+        const newList = coordinatesList.map(e => {return {longitude:e.lng, latitude:e.lat}});
         const res = await axios.post("http://localhost:8080/admin/sendLocation", {adminUsername:username,
-         coordinatesList:coordinatesList,
-          city:city, 
+         coordinatesList:newList,
+          cityName:city, 
           amountOfPoints:amountOfPoints  });
           dispatch({
             type:SUCCESS_MESSAGE,
@@ -37,6 +44,12 @@ export const pushTheResult = (coordinatesList,username, city, amountOfPoints, hi
         dispatch({
             type:GET_ERRORS,
             payload:err.response.data
+        })
+        
+        new Promise((resolve, reject) => {setTimeout(() => resolve(),5000)}).then(()=>{
+            dispatch({
+                type:SET_NO_ERRORS
+            })
         })
     }
 }
@@ -69,31 +82,43 @@ export const deleteLocation = (locationCoordinates) => {
     }
 }
 
-export const setMaxLocationsAmount = (amountOfLocations) => {
+export const setMaxLocationsAmount = (amountOfLocations) => async dispatch => {
     try {
-        return {
+        dispatch ({
             type:SET_MAX_AMOUNT_OF_POINTS,
             payload: amountOfLocations
-        }
+        })
     }catch(err){
-        return {
+        dispatch( {
             type: GET_ERRORS,
             payload: err
-        }       
+        })
+        new Promise((resolve, reject) => {setTimeout(() => resolve(),5000)}).then(()=>{
+            dispatch({
+                type:SET_NO_ERRORS
+            })
+        })
     }
 }
 export const getBestFittingPoints = (amountOfPoints, cityName) => async dispatch =>{
     try {
-        const res = await axios.get("http://localhost:8080/admin/getVotes",{params:{amountOfPoints:amountOfPoints, cityName:cityName}} );
+        const res = await axios.get("http://localhost:8080/admin/getBestPoints",{params:{amountOfPoints:amountOfPoints, cityName:cityName}} );
+        const newRes = res.data.map(e => {return {lng:e.longitude, lat:e.latitude}});
         dispatch({
-            type: GET_POINTS,
-            payload: res.data
+            type: GET_BEST_SUITABLE_POINTS,
+            payload: newRes
         })
     } catch (err) {
         dispatch({
             type:GET_ERRORS,
-            payload:err
+            payload:err.response.data
         })
+        new Promise((resolve, reject) => {setTimeout(() => resolve(),5000)}).then(()=>{
+            dispatch({
+                type:SET_NO_ERRORS
+            })
+        }
+        )
     }
 }
 

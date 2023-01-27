@@ -9,7 +9,10 @@ function CityChoose({cities, getCityData}) {
   const dispatch = useDispatch();
   useEffect(()=>{
     dispatch(getAllCities());
-  }, [])
+    if(cities[0]){
+    getCityData(cities[0])
+    }
+  }, [cities])
 
   const setSelectedCity = (e) =>{
     console.log(e)

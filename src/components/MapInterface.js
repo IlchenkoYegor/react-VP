@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, Container, Form } from 'react-bootstrap'
+import { Alert, Container, Form, FormGroup } from 'react-bootstrap'
 import { connect, useDispatch } from 'react-redux';
 import { isNotEmpty } from '../isNotEmpty';
 import RequestAFittingPointsButton from './RequestAFittingPointsButton'
@@ -8,6 +8,7 @@ import { createPoll, getBestFittingPoints, pushTheResult, setMaxLocationsAmount 
 import { getAllPointsByCity } from '../actions/getPointsFromServerActions';
 import ModalComponent from './ModalComponent';
 import { useCallback } from 'react';
+import classNames from 'classnames';
 
 function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName, selectedLocations, username, amountOfCurrentSelected}) {
 
@@ -22,8 +23,8 @@ function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName
 
   const onSubmitMostFittingCbk = useCallback( function onSubmitMostFitting(e){
       e.preventDefault();
-      dispatch(getBestFittingPoints(amountOfCurrentSelected, cityName));
-  },[cityName, amountOfCurrentSelected])
+      dispatch(getBestFittingPoints(maxAmountOfPoints, cityName));
+  },[cityName, maxAmountOfPoints])
 
   const onSubmitPushResultCbk = useCallback( function onSubmitPushTheResult(e){
     e.preventDefault();
@@ -51,23 +52,36 @@ function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName
 
   return (
        <div>
-       {isNotEmpty(errors) && <ModalComponent error={errors}></ModalComponent>}
-       {isNotEmpty(errors) &&<Alert key='warning' variant='warning'>error occured </Alert>} 
-    <div className='text-center '>Map</div>
+
+    
     <Container>
+    <h3 className='text-center '>Map</h3>
     <p className='mb-3 mt-3 ml-3'>From here you can point the destination of aid trucks, using the information from polling and start the polling</p>
     <p className='mb-3'>But firstly you have to choose the city where you wish to set the aid centers</p>
     </Container>
     <Container>
+    
+    
         <Form onSubmit={onSubmitMostFittingCbk}>
-          <button className='btn mb-3'>find the most fitting points</button>
+        <FormGroup>
+          <button className={classNames('btn mt-3 ml-3 ',{"btn-danger":errors.amountError})}>find the most fitting points</button>
+          { errors.amountError && (<div className='text-danger'><small>{errors.amountError}</small></div>)}
+          </FormGroup>
           </Form>
+          
           <Form onSubmit={onSubmitCreatePollCbk}>
-          <button className='btn mt-3 ml-3'>create poll</button>
+          <FormGroup>
+          <button className={classNames('btn mt-3 ml-3 ',{"btn-danger":errors.cityError || errors.telegramError})}>create poll</button>
+          {(errors.cityError || errors.telegramError) && (<div className='text-danger'><small>{errors.cityError} {errors.telegramError}</small></div>)}
+          </FormGroup>
           </Form>
+          
           <Form onSubmit={onSubmitPushResultCbk}>
-          <button className='btn mt-3 ml-3'>send selected locations</button>
-        </Form>
+          <FormGroup>
+          <button className={classNames(['btn mt-3 ml-3 ',{"btn-danger":errors.cityError || errors.telegramError}])}>send selected locations</button>
+          {(errors.cityError || errors.telegramError) && (<div className='text-danger'><small>{errors.cityError} {errors.telegramError}</small></div>)}
+        </FormGroup></Form>
+        
       </Container>
       <Container>
         <Form>
@@ -77,7 +91,7 @@ function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName
           <Form.Range min={1} max={100} onChange={onAmountChange} onClick={onAmountClick}></Form.Range>
           <Form.Label >{selectedMax}</Form.Label>
           </Form.Group>
-          <Container><p>current max amount {maxAmountOfPoints}</p></Container>
+          <Container className={classNames({"text-danger":errors.amountError})}><p>current max amount {maxAmountOfPoints}</p></Container>
         </Form>
         </Container>
     </div>

@@ -79,7 +79,7 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
         { /* Child components, such as markers, info windows, etc.  onClick1={deleteLocation}*/}
         <></>
         {/* <CitizenLocationMarker position1={}></CitizenLocationMarker> */}
-        {amountOfPoints>0 && locationCoordinates.map(e=>{return <CitizenLocationMarker position={e} ></CitizenLocationMarker>}) }
+        {amountOfPoints>0 && locationCoordinates.map(e=>{console.log(e); return <CitizenLocationMarker position1={e} ></CitizenLocationMarker>}) }
         {amountOfSelectedLocations>0 && selectedPoints.map(e=>{return <SelectedLocationMarker position1={e} onClick={click => onMarkerClick(e)} ></SelectedLocationMarker>}) }
       </GoogleMap>
       </div>
@@ -92,9 +92,9 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
 
 const mapStateToProps = state =>{
   return {
-    locationsCoordinates: state.mapPoints.locationCoordinates,
+    locationCoordinates: state.getPoints.points,
     selectedPoints: state.mapPoints.selectedPoints,
-    amountOfPoints: state.mapPoints.amountOfPoints,
+    amountOfPoints: state.getPoints.amountOfPoints,
     amountOfSelectedLocations: state.mapPoints.amountOfSelectedLocations,
     center: state.mapPoints.city.center,
     cityName: state.mapPoints.city.name,
