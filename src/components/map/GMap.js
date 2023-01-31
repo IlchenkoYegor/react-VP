@@ -13,6 +13,9 @@ import CitizenLocationMarker from '../marker/CitizenLocationMarker';
 import SelectedLocationMarker from '../marker/SelectedLocationMarker';
 import { Alert, Container, Spinner } from 'react-bootstrap';
 import { useEffect } from 'react';
+import useSupercluster from 'use-supercluster';
+import { useState } from 'react';
+import ClusterMarker from '../marker/ClusterMarker';
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 const containerStyle = {
@@ -25,28 +28,65 @@ const containerStyle = {
 const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelectedLocations,center, setLocation, maxPoints, errors, cityName}) => {
 
   //[])
-
+  const [bounds, setBounds] = useState([])
+  const [zoom, setZoom] = useState(10)
   console.log(amountOfPoints);
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: API_KEY
   })
   const mapRef = React.useRef(undefined)
+  
   const onLoad = React.useCallback(function callback(map) {
     mapRef.current = map;
   }, [])
-//  console.log(center);
 
-  console.log(cityName)
-  
   const onUnmount = React.useCallback(function callback() {
     mapRef.current = undefined;
   }, [])
+  
   const dispatch = useDispatch();
+  
   const useFetching = (e) => useEffect(
-    () => {dispatch(e(cityName));},
+    () => {dispatch(e(cityName))},
   [cityName]);
+  
   useFetching(getAllPointsByCity);
+
+  const onZoomChangedHdl = () =>{
+
+  }
+
+  const {clusters} = useSupercluster(
+    {
+      points:locationCoordinates,
+      bounds,
+      zoom,
+      options:{
+        radius:100,
+        maxZoom:20
+      }
+    }
+  )
+//  console.log(center);
+
+ // console.log(cityName)
+  function onBoundsChangedHandler(){
+    if(mapRef.current){
+      const ne= mapRef.current.getBounds().getNorthEast();
+      const sw = mapRef.current.getBounds().getSouthWest();
+      setBounds([
+        sw.lng(),
+        sw.lat(),
+        ne.lng(),
+        ne.lat()
+      ]) 
+      //console.log(bounds);
+    }
+  } 
+
+  //console.log(clusters);
+
   const onMapClick = (e)=>{
     e.domEvent.preventDefault();
     if(amountOfSelectedLocations<maxPoints){
@@ -71,7 +111,8 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
         mapContainerStyle={containerStyle}
         center={center}
         zoom={10}
-        onZoomChanged={null}
+        onZoomChanged={() => {mapRef.current && setZoom(mapRef.current.getZoom())}}
+        onBoundsChanged = {onBoundsChangedHandler}
         onLoad={onLoad}
         onUnmount={onUnmount}
         onClick = {onMapClick}
@@ -79,7 +120,19 @@ const GMap = ({locationCoordinates, selectedPoints, amountOfPoints,amountOfSelec
         { /* Child components, such as markers, info windows, etc.  onClick1={deleteLocation}*/}
         <></>
         {/* <CitizenLocationMarker position1={}></CitizenLocationMarker> */}
-        {amountOfPoints>0 && locationCoordinates.map(e=>{console.log(e); return <CitizenLocationMarker position1={e} ></CitizenLocationMarker>}) }
+        {clusters.map(cluster => { 
+          const [lng, lat] = cluster.geometry.coordinates;
+          const {cluster: isCluster, point_count:pointCount} = cluster.properties;
+          if(isCluster){
+            return(
+              <ClusterMarker position={{lng, lat}} pointCount={pointCount}></ClusterMarker>
+            )
+          }
+          return (
+            <CitizenLocationMarker position1={{lng,lat}} ></CitizenLocationMarker>
+          )
+        })}
+        {  }
         {amountOfSelectedLocations>0 && selectedPoints.map(e=>{return <SelectedLocationMarker position1={e} onClick={click => onMarkerClick(e)} ></SelectedLocationMarker>}) }
       </GoogleMap>
       </div>

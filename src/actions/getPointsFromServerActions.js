@@ -4,7 +4,17 @@ import {GET_CITIES, GET_ERRORS, GET_POINTS, SET_NO_ERRORS } from "./types";
 export const getAllPointsByCity = (city) => async dispatch =>{
     try {
         let res = await axios.get("http://localhost:8080/admin/getVotes",{params:{city:city}} );
-        const newRes = res.data.map(e => {return {lng:e.longitude, lat:e.latitude}});
+        const newRes = res.data.map(e => ({
+            type: "Feature",
+            properties: { cluster: false},
+            geometry: {
+              type: "Point",
+              coordinates: [
+                parseFloat(e.longitude),
+                parseFloat(e.latitude)
+              ]
+            }
+          }));
         console.log(newRes);
         dispatch({
             type: GET_POINTS,
