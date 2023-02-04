@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Alert, Container, Form, FormGroup } from 'react-bootstrap'
+import { Alert, Container, Form, FormGroup, Spinner } from 'react-bootstrap'
 import { connect, useDispatch } from 'react-redux';
 import { isNotEmpty } from '../isNotEmpty';
 import RequestAFittingPointsButton from './RequestAFittingPointsButton'
@@ -9,6 +9,7 @@ import { getAllPointsByCity } from '../actions/getPointsFromServerActions';
 import ModalComponent from './ModalComponent';
 import { useCallback } from 'react';
 import classNames from 'classnames';
+import { Timer } from './Timer';
 
 function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName, selectedLocations, username, amountOfCurrentSelected}) {
 
@@ -71,14 +72,27 @@ function MapInterface({errors, maxAmountOfPoints, setMaxLocationsAmount,cityName
           
           <Form onSubmit={onSubmitCreatePollCbk}>
           <FormGroup>
-          <button className={classNames('btn mt-3 ml-3 ',{"btn-danger":errors.cityError || errors.telegramError})}>create poll</button>
+          <button disabled={errors.pollingTimeout} className={classNames('btn mt-3 ml-3 ',{"btn-danger":errors.cityError || errors.telegramError})}>
+          { errors.pollingTimeout ?
+            <div>
+              <Timer lastTime={errors.pollingTimeout}/>
+              <Spinner></Spinner>
+            </div> : 
+            <div>create poll</div> }
+          </button>
           {(errors.cityError || errors.telegramError) && (<div className='text-danger'><small>{errors.cityError} {errors.telegramError}</small></div>)}
           </FormGroup>
           </Form>
           
           <Form onSubmit={onSubmitPushResultCbk}>
           <FormGroup>
-          <button className={classNames(['btn mt-3 ml-3 ',{"btn-danger":errors.cityError || errors.telegramError}])}>send selected locations</button>
+          <button disabled={errors.sendLocationTimeout} className={classNames(['btn mt-3 ml-3 ',{"btn-danger":errors.cityError || errors.telegramError}])}>
+              { 
+              errors.sendLocationTimeout ?<div><Timer lastTime={errors.sendLocationTimeout}/>
+              <Spinner></Spinner></div> 
+              : <div>send selected locations</div>
+            }
+           </button>
           {(errors.cityError || errors.telegramError) && (<div className='text-danger'><small>{errors.cityError} {errors.telegramError}</small></div>)}
         </FormGroup></Form>
         

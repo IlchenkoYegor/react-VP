@@ -4,6 +4,7 @@ import { GET_ERRORS, SET_CURRENT_USER } from "../actions/types";
 import setJWTToken from "../securityUtils/setJWTToken";
 
 export const createNewUser = (newUser, navigate)=> async dispatch => {
+    
     try{
         await axios.post("http://localhost:8080/api/user/register", newUser);
         navigate("/login");

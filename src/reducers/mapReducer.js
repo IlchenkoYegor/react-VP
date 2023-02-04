@@ -1,4 +1,4 @@
-import { DELETE_SUITABLE_POINT, GET_BEST_SUITABLE_POINTS,SET_CITY, SET_CURRENT_USER, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS } from "../actions/types";
+import { DELETE_SUITABLE_POINT, GET_BEST_SUITABLE_POINTS,RESET_ALL_POINTS_INFO,SET_CITY, SET_CURRENT_USER, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS } from "../actions/types";
 
 const initialState = {
     
@@ -18,6 +18,10 @@ const initialState = {
 
 export const mapReducer = (state = initialState, action) => {
         switch(action.type){
+            case RESET_ALL_POINTS_INFO:
+                return {
+                    ...state, selectedPoints: [], amountOfPoints: action.payload, amountOfSelectedLocations: 0
+                }
             case SET_SUITABLE_POINTS:
                 return {...state, selectedPoints: state.selectedPoints.concat( action.payload), amountOfSelectedLocations: state.amountOfSelectedLocations+1};
             case SET_MAX_AMOUNT_OF_POINTS:

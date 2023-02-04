@@ -1,7 +1,9 @@
 import axios from "axios";
-import {GET_CITIES, GET_ERRORS, GET_POINTS, SET_NO_ERRORS } from "./types";
+import { mainLoading } from "./loadingActions";
+import {GET_CITIES, GET_ERRORS, GET_POINTS, RESET_ALL_POINTS_INFO, SET_NO_ERRORS } from "./types";
 
 export const getAllPointsByCity = (city) => async dispatch =>{
+    dispatch(mainLoading(true));
     try {
         let res = await axios.get("http://localhost:8080/admin/getVotes",{params:{city:city}} );
         const newRes = res.data.map(e => ({
@@ -20,7 +22,12 @@ export const getAllPointsByCity = (city) => async dispatch =>{
             type: GET_POINTS,
             payload: newRes
         })
+        dispatch({
+            type: RESET_ALL_POINTS_INFO,
+            payload: newRes.length
+        })
     } catch (err) {
+        console.log(err)
         dispatch({
             type:GET_ERRORS,
             payload:err.response.data
@@ -31,17 +38,21 @@ export const getAllPointsByCity = (city) => async dispatch =>{
             })
         )
     }
+    dispatch(mainLoading(false));
 }
 
 
 export const getAllCities = () => async dispatch =>{
+    dispatch(mainLoading(true));
     try{
         const res = await axios.get("http://localhost:8080/volunteers/getCities");
         dispatch({
             type: GET_CITIES,
             payload: res.data
         })
+        
     }catch(err){
+        
         dispatch({
             type: GET_ERRORS,
             payload: err.response.data
@@ -52,5 +63,6 @@ export const getAllCities = () => async dispatch =>{
             })
         )
     }
+    dispatch(mainLoading(false));
 }
 

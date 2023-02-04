@@ -1,10 +1,12 @@
 import axios from "axios";
 import { connect } from "react-redux";
+import { mainLoading } from "./loadingActions";
 import { GET_ERRORS, SET_CITY, GET_POINTS, TAKE_DELAY, SET_MAX_AMOUNT_OF_POINTS, SET_SUITABLE_POINTS, SUCCESS_MESSAGE, DELETE_SUITABLE_POINT, GET_BEST_SUITABLE_POINTS, SET_NO_ERRORS } from "./types";
 
 const DELAYINMS = process.env.REACT_APP_API_KEY;
 
 export const createPoll = (cityName, history) => async dispatch =>{
+    dispatch(mainLoading(true));
     try {
         const res = await axios.get("http://localhost:8080/admin/sendMessage", {params:{city:cityName}});
         dispatch({
@@ -27,9 +29,11 @@ export const createPoll = (cityName, history) => async dispatch =>{
             })
         })
     }
+    dispatch(mainLoading(false));
 }
 
 export const pushTheResult = (coordinatesList,username, city, amountOfPoints, history) => async dispatch => {
+    dispatch(mainLoading(true));
     try{
         const newList = coordinatesList.map(e => {return {longitude:e.lng, latitude:e.lat}});
         const res = await axios.post("http://localhost:8080/admin/sendLocation", {adminUsername:username,
@@ -52,6 +56,7 @@ export const pushTheResult = (coordinatesList,username, city, amountOfPoints, hi
             })
         })
     }
+    dispatch(mainLoading(false));
 }
 
 export const setLocation = (locationCoordinates)=> {
@@ -101,6 +106,7 @@ export const setMaxLocationsAmount = (amountOfLocations) => async dispatch => {
     }
 }
 export const getBestFittingPoints = (amountOfPoints, cityName) => async dispatch =>{
+    dispatch(mainLoading(true));
     try {
         const res = await axios.get("http://localhost:8080/admin/getBestPoints",{params:{amountOfPoints:amountOfPoints, cityName:cityName}} );
         const newRes = res.data.map(e => {return {lng:e.longitude, lat:e.latitude}});
@@ -120,10 +126,11 @@ export const getBestFittingPoints = (amountOfPoints, cityName) => async dispatch
         }
         )
     }
+    dispatch(mainLoading(false));
 }
 
 
-export const getCityData = (city) =>{
+export const getCityData = (city)  =>{
     console.log(city);
     if(!city.name){
         return {

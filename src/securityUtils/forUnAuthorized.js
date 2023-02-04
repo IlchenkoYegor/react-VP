@@ -6,15 +6,15 @@ import { connect } from "react-redux"
 
 
 const SecureRoute = ({isAuthorized, children}) =>{
-    if(!isAuthorized){
+    if(isAuthorized){
         return <Navigate to={"/"}></Navigate>
     }
     return {...children};
 }
 
-const mapStateToProps = state => {
+const mapStateToProps = state => ({
     isAuthorized: state.security.validToken
-}
+})
 
 SecureRoute.propTypes ={
     isAuthorized: PropTypes.bool

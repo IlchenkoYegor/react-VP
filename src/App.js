@@ -19,6 +19,8 @@ import setJWTToken from './securityUtils/setJWTToken';
 import { logout } from './actions/securityActions';
 import { SET_CURRENT_USER } from './actions/types';
 import SecureRoute from './securityUtils/secureRoute';
+import ForUnAuthorized from './securityUtils/forUnAuthorized';
+import MainLoadingModal from './components/MainLoadingModal';
 
 const jwtToken = localStorage.jwtToken
 
@@ -40,12 +42,13 @@ function App() {
   return (
     <Provider store={store}>
       <div>   
+      <MainLoadingModal></MainLoadingModal>
         <MainNavbar></MainNavbar>
         <Routes>
           <Route path='/' element ={<Main/>}/>
-          <Route path='/register' element={<Register/>}>
+          <Route path='/register' element={<ForUnAuthorized><Register/></ForUnAuthorized>}>
           </Route>
-          <Route path='/login' element={<Login/>}>
+          <Route path='/login' element={<ForUnAuthorized><Login/></ForUnAuthorized>}>
           </Route>
           
             <Route path='/map' element={<SecureRoute requeredRole="ADMIN"><Map/></SecureRoute>}>
