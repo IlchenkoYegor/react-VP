@@ -1,13 +1,13 @@
 import { combineReducers } from "redux";
+import { authReducer } from "./authReducer";
 import errorReducer from "./errorReducer";
-import {mapReducer} from "./mapReducer"
-import {authReducer} from "./authReducer";
 import getDataFromServerReducer from "./getDataFromServerReducer";
 import { loadingReducer } from "./loadingReducer";
+import { mapReducer } from "./mapReducer";
 export default combineReducers({
-    errors: errorReducer,
-    mapPoints: mapReducer,
-    security: authReducer,
-    getPoints: getDataFromServerReducer,
-    loading: loadingReducer
-})
+  errors: errorReducer,
+  mapPoints: mapReducer,
+  security: authReducer,
+  getPoints: getDataFromServerReducer,
+  loading: loadingReducer,
+});

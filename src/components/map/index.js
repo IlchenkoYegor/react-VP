@@ -1,1 +1,1 @@
-export * from './GMap'
+export * from "./GMap";
