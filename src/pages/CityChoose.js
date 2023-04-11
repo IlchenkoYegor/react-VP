@@ -4,7 +4,7 @@ import { connect, useDispatch } from "react-redux";
 import { getAllCities } from "../actions/getPointsFromServerActions";
 import { getCityData } from "../actions/mapActions";
 
-function CityChoose({ cities, cityName }) {
+function CityChoose({ cities, cityName, username }) {
   const dispatch = useDispatch();
   let [selectedCity, setSelectedCity] = useState("");
   const useFetching = (e) =>
@@ -13,18 +13,18 @@ function CityChoose({ cities, cityName }) {
       //console.log(cities)
       if (cities[0]) {
         //  dispatch( e2(cities[0]));
-        setSelectedCity(cities[0]);
+        setSelectedCity(0);
       }
       //console.log(cities);
     }, [JSON.stringify(cities)]);
-
+  console.log(JSON.stringify(selectedCity));
   useFetching(getAllCities, getCityData);
   const setSelectedCityCbk = useCallback(
     (e) => {
       console.log(toString(e));
 
       // console.log(first);
-      dispatch(getCityData(e));
+      dispatch(getCityData(username, cities[e]));
     },
     [JSON.stringify(cities)]
   );
@@ -45,7 +45,7 @@ function CityChoose({ cities, cityName }) {
               select the city where you want to process data
             </option>
             {cities.map((e, id) => (
-              <option value={e} key={id}>
+              <option value={id} key={id}>
                 {e.name}
               </option>
             ))}
@@ -69,7 +69,8 @@ function CityChoose({ cities, cityName }) {
 
 const mapStateToProps = (state) => ({
   cities: state.getPoints.cities,
-  cityName: state.mapPoints.city.name,
+  cityName: state.security.city.name,
+  username: state.security.user.username,
 });
 
 export default connect(mapStateToProps, null)(CityChoose);

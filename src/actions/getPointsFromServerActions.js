@@ -8,29 +8,35 @@ import {
   SET_NO_ERRORS,
 } from "./types";
 
-export const getAllPointsByCity = (city) => async (dispatch) => {
+export const getAllPointsByCity = (city, currentCount) => async (dispatch) => {
   dispatch(mainLoading(true));
   try {
-    let res = await axios.get("http://localhost:8080/admin/getVotes", {
+    let count = await axios.get("http://localhost:8080/admin/getVotesCount", {
       params: { city: city },
     });
-    const newRes = res.data.map((e) => ({
-      type: "Feature",
-      properties: { cluster: false },
-      geometry: {
-        type: "Point",
-        coordinates: [parseFloat(e.longitude), parseFloat(e.latitude)],
-      },
-    }));
-    console.log(newRes);
-    dispatch({
-      type: GET_POINTS,
-      payload: newRes,
-    });
-    dispatch({
-      type: RESET_ALL_POINTS_INFO,
-      payload: newRes.length,
-    });
+    console.log(count.data);
+    if (count.data !== currentCount) {
+      let res = await axios.get("http://localhost:8080/admin/getVotes", {
+        params: { city: city },
+      });
+      const newRes = res.data.map((e) => ({
+        type: "Feature",
+        properties: { cluster: false },
+        geometry: {
+          type: "Point",
+          coordinates: [parseFloat(e.longitude), parseFloat(e.latitude)],
+        },
+      }));
+      console.log(newRes);
+      dispatch({
+        type: GET_POINTS,
+        payload: newRes,
+      });
+      dispatch({
+        type: RESET_ALL_POINTS_INFO,
+        payload: newRes.length,
+      });
+    }
   } catch (err) {
     console.log(err);
     dispatch({

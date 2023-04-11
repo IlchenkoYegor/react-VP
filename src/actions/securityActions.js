@@ -39,8 +39,14 @@ export const loginByCrid = (crident, navigate) => async (dispatch) => {
     });
     const { token } = res.data;
     localStorage.setItem("jwtToken", token);
+
+    //sessionStorage.setItem("city", );
     setJWTToken(token);
     const decoded = jwtDecode(token);
+    console.log(decoded.city);
+    if (decoded.city) {
+      localStorage.setItem("city", decoded.city);
+    }
     dispatch({ type: SET_CURRENT_USER, payload: decoded });
   } catch (err) {
     if (err.response && err.response.data) {
@@ -59,6 +65,7 @@ export const loginByCrid = (crident, navigate) => async (dispatch) => {
 
 export const logout = () => (dispatch) => {
   localStorage.removeItem("jwtToken");
+  localStorage.removeItem("city");
   setJWTToken(false);
   dispatch({
     type: SET_CURRENT_USER,

@@ -160,14 +160,21 @@ export const getBestFittingPoints =
     dispatch(mainLoading(false));
   };
 
-export const getCityData = (city) => {
+export const getCityData = (username, city) => {
   console.log(city);
-  if (!city.name) {
+  if (!city || !city.name) {
     return {
       type: GET_ERRORS,
       payload: {},
     };
   }
+  localStorage.setItem("city", city.name);
+  const citydata = {
+    username: username,
+    city: city.name,
+  };
+  console.log(citydata);
+  axios.patch("http://localhost:8080/admin/resetCity", citydata);
   console.log(city.name);
   console.log(city);
   const normilizedSelectedCity = {
@@ -189,4 +196,39 @@ export const getCityData = (city) => {
       payload: err,
     };
   }
+};
+
+export const initCityData = (city) => async (dispatch) => {
+  console.log(city);
+  if (!city) {
+    return {
+      type: GET_ERRORS,
+      payload: {},
+    };
+  }
+
+  axios.get("http://localhost:8080/admin/getCity?city=" + city).then((res) => {
+    city = res.data;
+    console.log(city.name);
+    console.log(city);
+    const normilizedSelectedCity = {
+      name: city.name,
+      area: city.area,
+      center: {
+        lat: city.center.latitude,
+        lng: city.center.longitude,
+      },
+    };
+    try {
+      dispatch({
+        type: SET_CITY,
+        payload: normilizedSelectedCity,
+      });
+    } catch (err) {
+      dispatch({
+        type: GET_ERRORS,
+        payload: err,
+      });
+    }
+  });
 };

@@ -1,24 +1,20 @@
-import { Component } from "react"
-import PropTypes from "prop-types"
-import { Navigate, Route } from "react-router-dom"
-import { RedirectFunction } from "react-router-dom"
-import { connect } from "react-redux"
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { Navigate } from "react-router-dom";
 
+const forUnAuthorized = ({ isAuthorized, children }) => {
+  if (isAuthorized) {
+    return <Navigate to={"/"}></Navigate>;
+  }
+  return { ...children };
+};
 
-const SecureRoute = ({isAuthorized, children}) =>{
-    if(isAuthorized){
-        return <Navigate to={"/"}></Navigate>
-    }
-    return {...children};
-}
+const mapStateToProps = (state) => ({
+  isAuthorized: state.security.validToken,
+});
 
-const mapStateToProps = state => ({
-    isAuthorized: state.security.validToken
-})
+forUnAuthorized.propTypes = {
+  isAuthorized: PropTypes.bool,
+};
 
-SecureRoute.propTypes ={
-    isAuthorized: PropTypes.bool
-}
-
-export default connect(mapStateToProps,null)(SecureRoute);
-
+export default connect(mapStateToProps, null)(forUnAuthorized);

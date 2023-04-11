@@ -219,7 +219,7 @@ const mapStateToProps = (state) => {
   return {
     errors: state.errors,
     maxAmountOfPoints: state.mapPoints.maxAvailablePoints,
-    cityName: state.mapPoints.city.name,
+    cityName: state.security.city.name,
     selectedLocations: state.mapPoints.selectedPoints,
     username: state.security.user.username,
     amountOfCurrentSelected: state.mapPoints.amountOfSelectedLocations,

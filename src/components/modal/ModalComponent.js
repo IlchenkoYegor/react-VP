@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { isNotEmpty } from "../isNotEmpty";
+import { isNotEmpty } from "../../isNotEmpty";
 
 export default function ModalComponent({ error }) {
   const [show, setShow] = useState(isNotEmpty(error));

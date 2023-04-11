@@ -2,17 +2,21 @@ import React from "react";
 import { Spinner } from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import { connect } from "react-redux";
+import style from "./modal.module.css";
 
 function MainLoadingModal({ mainLoading }) {
   return (
     <div>
       <Modal
         show={mainLoading}
-        dialogClassName="modal-90w"
+        size="lg"
         aria-labelledby="example-custom-modal-styling-title"
+        contentClassName={style["modal-content"]}
+        style={{ background: "" }}
+        centered
       >
-        <Modal.Body>
-          <Spinner></Spinner>
+        <Modal.Body className="text-center" style={{ color: "white" }}>
+          <Spinner size="3x"></Spinner>
         </Modal.Body>
       </Modal>
     </div>

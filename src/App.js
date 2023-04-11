@@ -1,13 +1,19 @@
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faTelegram } from "@fortawesome/free-brands-svg-icons";
 import "bootstrap/dist/css/bootstrap.min.css";
 import jwtDecode from "jwt-decode";
 import React from "react";
 import { Provider } from "react-redux";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import { initCityData } from "./actions/mapActions";
 import { logout } from "./actions/securityActions";
 import { SET_CURRENT_USER } from "./actions/types";
-import MainLoadingModal from "./components/MainLoadingModal";
-import MainNavbar from "./components/MainNavbar";
+import MainFooter from "./components/constant-page-components/MainFooter";
+import MainNavbar from "./components/constant-page-components/MainNavbar";
+import MainLoadingModal from "./components/modal/MainLoadingModal";
+import "./heights.module.css";
+import AdditionalInfo from "./pages/AdditionalInfo";
 import CityChoose from "./pages/CityChoose";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
@@ -18,6 +24,8 @@ import SecureRoute from "./securityUtils/secureRoute";
 import setJWTToken from "./securityUtils/setJWTToken";
 import store from "./store";
 
+library.add(faTelegram);
+
 const jwtToken = localStorage.jwtToken;
 
 if (jwtToken) {
@@ -27,6 +35,10 @@ if (jwtToken) {
     type: SET_CURRENT_USER,
     payload: decoded_jwt,
   });
+  const city = localStorage.city ? localStorage.city : false;
+  if (city) {
+    store.dispatch(initCityData(city));
+  }
   const currentTime = Date.now() / 1000;
   if (decoded_jwt.exp < currentTime) {
     store.dispatch(logout());
@@ -41,13 +53,30 @@ function App() {
         <MainLoadingModal></MainLoadingModal>
         <MainNavbar></MainNavbar>
         <Routes>
-          <Route path="/" element={<Main />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Main />
+                <MainFooter />
+              </>
+            }
+          />
           <Route
             path="/register"
             element={
               <ForUnAuthorized>
                 <Register />
               </ForUnAuthorized>
+            }
+          ></Route>
+          <Route
+            path="/main-info"
+            element={
+              <SecureRoute requeredRole="USER">
+                <AdditionalInfo></AdditionalInfo>
+                <MainFooter />
+              </SecureRoute>
             }
           ></Route>
           <Route
@@ -64,10 +93,19 @@ function App() {
             element={
               <SecureRoute requeredRole="ADMIN">
                 <Map />
+                <MainFooter />
               </SecureRoute>
             }
           ></Route>
-          <Route path="/main" element={<Main />}></Route>
+          <Route
+            path="/main"
+            element={
+              <>
+                <Main />
+                <MainFooter />
+              </>
+            }
+          ></Route>
 
           <Route
             path="/city"

@@ -2,8 +2,8 @@ import React from "react";
 import { Container, Nav, Navbar } from "react-bootstrap";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import { logout } from "../actions/securityActions";
-import { hasAuthorities } from "../securityUtils/hasAuthorities";
+import { logout } from "../../actions/securityActions";
+import { hasAuthorities } from "../../securityUtils/hasAuthorities";
 
 function MainNavbar({ security, logout }) {
   function onLogout() {
@@ -28,7 +28,7 @@ function MainNavbar({ security, logout }) {
       <Nav.Link as={Link} to="/main-info">
         Additional info
       </Nav.Link>
-      <Nav.Link as={Link} onClick={onLogout} to="/signout">
+      <Nav.Link as={Link} onClick={onLogout} to="/">
         Log out
       </Nav.Link>
     </Nav>

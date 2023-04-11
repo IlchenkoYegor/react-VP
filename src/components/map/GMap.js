@@ -3,9 +3,12 @@ import React, { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { connect, useDispatch } from "react-redux";
 import useSupercluster from "use-supercluster";
+import { geocode } from "../../actions/geocodingActions";
 import { getAllPointsByCity } from "../../actions/getPointsFromServerActions";
+import { mainLoading } from "../../actions/loadingActions";
 import { deleteLocation, setLocation } from "../../actions/mapActions";
 import { GET_ERRORS } from "../../actions/types";
+import useInterval from "../../hooks";
 import CitizenLocationMarker from "../marker/CitizenLocationMarker";
 import ClusterMarker from "../marker/ClusterMarker";
 import SelectedLocationMarker from "../marker/SelectedLocationMarker";
@@ -17,6 +20,7 @@ const containerStyle = {
   width: "100%",
   height: "100%",
 };
+const DELAY_INTERVAL = 40_000;
 
 const GMap = ({
   locationCoordinates,
@@ -51,11 +55,12 @@ const GMap = ({
 
   const useFetching = (e) =>
     useEffect(() => {
-      dispatch(e(cityName));
+      dispatch(e(cityName, amountOfPoints));
     }, [cityName]);
-
   useFetching(getAllPointsByCity);
-
+  useInterval(() => {
+    dispatch(getAllPointsByCity(cityName, amountOfPoints));
+  }, DELAY_INTERVAL);
   // eslint-disable-next-line no-unused-vars
   const onZoomChangedHdl = () => {};
 
@@ -85,22 +90,34 @@ const GMap = ({
 
   const onMapClick = (e) => {
     e.domEvent.preventDefault();
-    if (amountOfSelectedLocations < maxPoints) {
-      const latLong = e.latLng;
-      setLocation(latLong);
-    } else {
-      dispatch({
-        type: GET_ERRORS,
-        payload: {
-          data: "you cannot modify add more points than you have set",
-        },
+    console.log(e.latLng.lat(), e.latLng.lng());
+    dispatch(mainLoading(true));
+    geocode(e.latLng.lat(), e.latLng.lng())
+      .then((selectedCity) => {
+        if (amountOfSelectedLocations < maxPoints && selectedCity == cityName) {
+          const latLong = e.latLng;
+          setLocation(latLong);
+        } else {
+          dispatch({
+            type: GET_ERRORS,
+            payload: {
+              data: "you cannot add more points than you have set",
+            },
+          });
+        }
+        dispatch(mainLoading(false));
+      })
+      .catch((jej) => {
+        console.log(jej);
+        dispatch(mainLoading(false));
       });
-    }
+    //console.log("selected city", selectedCity);
   };
-
+  // eslint-disable-next-line no-undef
   const onMarkerClick = (coordinates) => {
     dispatch(deleteLocation(coordinates));
   };
+  // eslint-disable-next-line no-constant-condition
   return isLoaded ? (
     <div className={s.container}>
       <GoogleMap
@@ -153,8 +170,10 @@ const GMap = ({
       </GoogleMap>
     </div>
   ) : (
-    <div>
-      <Spinner></Spinner>
+    <div className="d-flex justify-content-center" style={{ height: "100%" }}>
+      <div className="align-self-center">
+        <Spinner style={{ height: "5em", width: "5em" }}></Spinner>
+      </div>
     </div>
   );
 };
@@ -165,8 +184,8 @@ const mapStateToProps = (state) => {
     selectedPoints: state.mapPoints.selectedPoints,
     amountOfPoints: state.getPoints.amountOfPoints,
     amountOfSelectedLocations: state.mapPoints.amountOfSelectedLocations,
-    center: state.mapPoints.city.center,
-    cityName: state.mapPoints.city.name,
+    center: state.security.city.center,
+    cityName: state.security.city.name,
     maxPoints: state.mapPoints.maxAvailablePoints,
     errors: state.errors,
   };

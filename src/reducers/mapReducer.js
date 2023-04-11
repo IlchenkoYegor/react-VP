@@ -2,7 +2,6 @@ import {
   DELETE_SUITABLE_POINT,
   GET_BEST_SUITABLE_POINTS,
   RESET_ALL_POINTS_INFO,
-  SET_CITY,
   SET_MAX_AMOUNT_OF_POINTS,
   SET_SUITABLE_POINTS,
 } from "../actions/types";
@@ -11,14 +10,7 @@ const initialState = {
   selectedPoints: [],
   amountOfPoints: 0,
   amountOfSelectedLocations: 0,
-  city: {
-    name: "",
-    area: 0,
-    center: {
-      lat: 0.0,
-      lng: 0.0,
-    },
-  },
+
   maxAvailablePoints: 0,
 };
 
@@ -47,11 +39,7 @@ export const mapReducer = (state = initialState, action) => {
         selectedPoints: state.selectedPoints.slice(0, action.payload),
         maxAvailablePoints: action.payload,
       };
-    case SET_CITY:
-      return {
-        ...state,
-        city: action.payload,
-      };
+
     case GET_BEST_SUITABLE_POINTS:
       return {
         ...state,

@@ -1,8 +1,8 @@
 import React from "react";
 import { Alert, Card, Col, Container, Row } from "react-bootstrap";
 import { connect } from "react-redux";
-import GMap from "../components/map/GMap";
 import MapInterface from "../components/MapInterface";
+import GMap from "../components/map/GMap";
 import { isNotEmpty } from "../isNotEmpty";
 
 function Map({ errors }) {
