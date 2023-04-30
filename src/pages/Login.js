@@ -70,6 +70,7 @@ function Login({ errors, loginByCrid }) {
                     className={classNames({ "is-invalid": errors.password })}
                     placeholder="password"
                   ></Form.Control>
+
                   {errors.password && (
                     <div className="invalid-feedback">{errors.password}</div>
                   )}

@@ -2,10 +2,11 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { GET_ERRORS, SET_CURRENT_USER } from "../actions/types";
 import setJWTToken from "../securityUtils/setJWTToken";
+import { initCityData } from "./mapActions";
 
 export const createNewUser = (newUser, navigate) => async (dispatch) => {
   try {
-    await axios.post("http://localhost:8080/api/user/register", newUser);
+    await axios.post("api/user/register", newUser);
     navigate("/login");
     dispatch({
       type: GET_ERRORS,
@@ -28,10 +29,7 @@ export const createNewUser = (newUser, navigate) => async (dispatch) => {
 
 export const loginByCrid = (crident, navigate) => async (dispatch) => {
   try {
-    const res = await axios.post(
-      "http://localhost:8080/api/user/login",
-      crident
-    );
+    const res = await axios.post("/api/user/login", crident);
     navigate("/main-info");
     dispatch({
       type: GET_ERRORS,
@@ -44,8 +42,11 @@ export const loginByCrid = (crident, navigate) => async (dispatch) => {
     setJWTToken(token);
     const decoded = jwtDecode(token);
     console.log(decoded.city);
+
     if (decoded.city) {
       localStorage.setItem("city", decoded.city);
+      dispatch(initCityData(decoded.city));
+      //dispatch(initCityData(decoded.city));
     }
     dispatch({ type: SET_CURRENT_USER, payload: decoded });
   } catch (err) {

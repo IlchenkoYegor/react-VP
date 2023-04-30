@@ -11,12 +11,12 @@ import {
 export const getAllPointsByCity = (city, currentCount) => async (dispatch) => {
   dispatch(mainLoading(true));
   try {
-    let count = await axios.get("http://localhost:8080/admin/getVotesCount", {
+    let count = await axios.get("/admin/getVotesCount", {
       params: { city: city },
     });
     console.log(count.data);
     if (count.data !== currentCount) {
-      let res = await axios.get("http://localhost:8080/admin/getVotes", {
+      let res = await axios.get("/admin/getVotes", {
         params: { city: city },
       });
       const newRes = res.data.map((e) => ({
@@ -57,7 +57,7 @@ export const getAllPointsByCity = (city, currentCount) => async (dispatch) => {
 export const getAllCities = () => async (dispatch) => {
   dispatch(mainLoading(true));
   try {
-    const res = await axios.get("http://localhost:8080/volunteers/getCities");
+    const res = await axios.get("/volunteers/getCities");
     dispatch({
       type: GET_CITIES,
       payload: res.data,

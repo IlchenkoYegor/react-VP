@@ -4,13 +4,14 @@ import {
   RESET_ALL_POINTS_INFO,
   SET_MAX_AMOUNT_OF_POINTS,
   SET_SUITABLE_POINTS,
+  SET_TIME_OF_DELIVERING,
 } from "../actions/types";
 
 const initialState = {
   selectedPoints: [],
   amountOfPoints: 0,
   amountOfSelectedLocations: 0,
-
+  timeOfDelivering: "",
   maxAvailablePoints: 0,
 };
 
@@ -21,6 +22,7 @@ export const mapReducer = (state = initialState, action) => {
         ...state,
         selectedPoints: [],
         amountOfPoints: action.payload,
+        timeOfDelivering: "",
         amountOfSelectedLocations: 0,
       };
     case SET_SUITABLE_POINTS:
@@ -39,7 +41,11 @@ export const mapReducer = (state = initialState, action) => {
         selectedPoints: state.selectedPoints.slice(0, action.payload),
         maxAvailablePoints: action.payload,
       };
-
+    case SET_TIME_OF_DELIVERING:
+      return {
+        ...state,
+        timeOfDelivering: action.payload,
+      };
     case GET_BEST_SUITABLE_POINTS:
       return {
         ...state,

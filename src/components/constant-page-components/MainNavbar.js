@@ -19,6 +19,16 @@ function MainNavbar({ security, logout }) {
           Map
         </Nav.Link>
       )}
+      {validToken && hasAuthorities(user, "ADMIN") && (
+        <Nav.Link as={Link} to="/addTheCity">
+          Add the city
+        </Nav.Link>
+      )}
+      {validToken && hasAuthorities(user, "ADMIN") && (
+        <Nav.Link as={Link} to="/users">
+          Users info
+        </Nav.Link>
+      )}
       {validToken && hasAuthorities(user, "VOLUNTEER") && (
         <Nav.Link as={Link} to="/city">
           Choose the city

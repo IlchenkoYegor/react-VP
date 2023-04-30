@@ -1,4 +1,5 @@
 import axios from "axios";
+import dayjs from "dayjs";
 import { mainLoading } from "./loadingActions";
 import {
   DELETE_SUITABLE_POINT,
@@ -8,6 +9,7 @@ import {
   SET_MAX_AMOUNT_OF_POINTS,
   SET_NO_ERRORS,
   SET_SUITABLE_POINTS,
+  SET_TIME_OF_DELIVERING,
   SUCCESS_MESSAGE,
   TAKE_DELAY,
 } from "./types";
@@ -18,7 +20,7 @@ const DELAYINMS = process.env.REACT_APP_API_KEY;
 export const createPoll = (cityName) => async (dispatch) => {
   dispatch(mainLoading(true));
   try {
-    const res = await axios.get("http://localhost:8080/admin/sendMessage", {
+    const res = await axios.get("/admin/sendMessage", {
       params: { city: cityName },
     });
     dispatch({
@@ -47,24 +49,27 @@ export const createPoll = (cityName) => async (dispatch) => {
 };
 
 export const pushTheResult =
-  (coordinatesList, username, city, amountOfPoints) => async (dispatch) => {
+  (coordinatesList, username, city, amountOfPoints, timeOfDelivering) =>
+  async (dispatch) => {
     console.log(coordinatesList);
     dispatch(mainLoading(true));
     try {
       const newList = coordinatesList.map((e) => {
-        return { longitude: e.lng(), latitude: e.lat() };
+        return { longitude: e.lng, latitude: e.lat };
       });
-      const res = await axios.post("http://localhost:8080/admin/sendLocation", {
+      const res = await axios.post("/admin/sendLocation", {
         adminUsername: username,
         coordinatesList: newList,
         cityName: city,
         amountOfPoints: amountOfPoints,
+        timeOfDelivering: timeOfDelivering,
       });
       dispatch({
         type: SUCCESS_MESSAGE,
         payload: res.data,
       });
     } catch (err) {
+      console.log(err);
       dispatch({
         type: GET_ERRORS,
         payload: err.response.data,
@@ -109,6 +114,14 @@ export const deleteLocation = (locationCoordinates) => {
   }
 };
 
+export const setTimeOfAidDelivering = (time) => {
+  dayjs(time).isAfter(Date.now());
+  return {
+    type: SET_TIME_OF_DELIVERING,
+    payload: time,
+  };
+};
+
 export const setMaxLocationsAmount =
   (amountOfLocations) => async (dispatch) => {
     try {
@@ -134,7 +147,7 @@ export const getBestFittingPoints =
   (amountOfPoints, cityName) => async (dispatch) => {
     dispatch(mainLoading(true));
     try {
-      const res = await axios.get("http://localhost:8080/admin/getBestPoints", {
+      const res = await axios.get("/admin/getBestPoints", {
         params: { amountOfPoints: amountOfPoints, cityName: cityName },
       });
       const newRes = res.data.map((e) => {
@@ -174,7 +187,7 @@ export const getCityData = (username, city) => {
     city: city.name,
   };
   console.log(citydata);
-  axios.patch("http://localhost:8080/admin/resetCity", citydata);
+  axios.patch("/admin/resetCity", citydata);
   console.log(city.name);
   console.log(city);
   const normilizedSelectedCity = {
@@ -207,7 +220,7 @@ export const initCityData = (city) => async (dispatch) => {
     };
   }
 
-  axios.get("http://localhost:8080/admin/getCity?city=" + city).then((res) => {
+  axios.get("/admin/getCity?city=" + city).then((res) => {
     city = res.data;
     console.log(city.name);
     console.log(city);

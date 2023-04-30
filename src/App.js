@@ -1,5 +1,7 @@
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { faTelegram } from "@fortawesome/free-brands-svg-icons";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import "bootstrap/dist/css/bootstrap.min.css";
 import jwtDecode from "jwt-decode";
 import React from "react";
@@ -14,11 +16,13 @@ import MainNavbar from "./components/constant-page-components/MainNavbar";
 import MainLoadingModal from "./components/modal/MainLoadingModal";
 import "./heights.module.css";
 import AdditionalInfo from "./pages/AdditionalInfo";
+import CityAdd from "./pages/CityAdd";
 import CityChoose from "./pages/CityChoose";
 import Login from "./pages/Login";
 import Main from "./pages/Main";
 import Map from "./pages/Map";
 import Register from "./pages/Register";
+import UsersInfoPage from "./pages/UsersInfoPage";
 import ForUnAuthorized from "./securityUtils/forUnAuthorized";
 import SecureRoute from "./securityUtils/secureRoute";
 import setJWTToken from "./securityUtils/setJWTToken";
@@ -48,76 +52,95 @@ if (jwtToken) {
 
 function App() {
   return (
-    <Provider store={store}>
-      <div>
-        <MainLoadingModal></MainLoadingModal>
-        <MainNavbar></MainNavbar>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Main />
-                <MainFooter />
-              </>
-            }
-          />
-          <Route
-            path="/register"
-            element={
-              <ForUnAuthorized>
-                <Register />
-              </ForUnAuthorized>
-            }
-          ></Route>
-          <Route
-            path="/main-info"
-            element={
-              <SecureRoute requeredRole="USER">
-                <AdditionalInfo></AdditionalInfo>
-                <MainFooter />
-              </SecureRoute>
-            }
-          ></Route>
-          <Route
-            path="/login"
-            element={
-              <ForUnAuthorized>
-                <Login />
-              </ForUnAuthorized>
-            }
-          ></Route>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Provider store={store}>
+        <div>
+          <MainLoadingModal></MainLoadingModal>
+          <MainNavbar></MainNavbar>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <Main />
+                  <MainFooter />
+                </>
+              }
+            />
+            <Route
+              path="/register"
+              element={
+                <ForUnAuthorized>
+                  <Register />
+                </ForUnAuthorized>
+              }
+            ></Route>
+            <Route
+              path="/main-info"
+              element={
+                <SecureRoute requeredRole="USER">
+                  <AdditionalInfo></AdditionalInfo>
+                  <MainFooter />
+                </SecureRoute>
+              }
+            ></Route>
+            <Route
+              path="/login"
+              element={
+                <ForUnAuthorized>
+                  <Login />
+                </ForUnAuthorized>
+              }
+            ></Route>
 
-          <Route
-            path="/map"
-            element={
-              <SecureRoute requeredRole="ADMIN">
-                <Map />
-                <MainFooter />
-              </SecureRoute>
-            }
-          ></Route>
-          <Route
-            path="/main"
-            element={
-              <>
-                <Main />
-                <MainFooter />
-              </>
-            }
-          ></Route>
-
-          <Route
-            path="/city"
-            element={
-              <SecureRoute requeredRole="VOLUNTEER">
-                <CityChoose />
-              </SecureRoute>
-            }
-          ></Route>
-        </Routes>
-      </div>
-    </Provider>
+            <Route
+              path="/map"
+              element={
+                <SecureRoute requeredRole="ADMIN">
+                  <Map />
+                  <MainFooter />
+                </SecureRoute>
+              }
+            ></Route>
+            <Route
+              path="/main"
+              element={
+                <>
+                  <Main />
+                  <MainFooter />
+                </>
+              }
+            ></Route>
+            <Route
+              path="/addTheCity"
+              element={
+                <SecureRoute requeredRole="ADMIN">
+                  <CityAdd></CityAdd>
+                  <MainFooter></MainFooter>
+                </SecureRoute>
+              }
+            ></Route>
+            <Route
+              path="/city"
+              element={
+                <SecureRoute requeredRole="VOLUNTEER">
+                  <CityChoose />
+                </SecureRoute>
+              }
+            ></Route>
+            <Route
+              path="/users"
+              element={
+                <SecureRoute requeredRole="ADMIN">
+                  <UsersInfoPage></UsersInfoPage>
+                  <MainFooter></MainFooter>
+                </SecureRoute>
+              }
+            ></Route>
+          </Routes>
+        </div>
+      </Provider>
+    </LocalizationProvider>
   );
 }
 
