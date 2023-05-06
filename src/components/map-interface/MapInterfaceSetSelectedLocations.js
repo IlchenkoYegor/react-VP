@@ -59,7 +59,7 @@ function MapInterfaceSetSelectedLocations({
   );
   return (
     <Form onSubmit={onSubmitPushResultCbk} className="text-center ">
-      <FormGroup>
+      <FormGroup className="text-center d-flex flex-column">
         <button
           disabled={errors.sendLocationTimeout}
           className={classNames([

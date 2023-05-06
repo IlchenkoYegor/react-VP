@@ -54,9 +54,11 @@ export const pushTheResult =
     console.log(coordinatesList);
     dispatch(mainLoading(true));
     try {
+      console.log(coordinatesList);
       const newList = coordinatesList.map((e) => {
         return { longitude: e.lng, latitude: e.lat };
       });
+      console.log(newList);
       const res = await axios.post("/admin/sendLocation", {
         adminUsername: username,
         coordinatesList: newList,

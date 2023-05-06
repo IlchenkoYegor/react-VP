@@ -1,4 +1,4 @@
-import { GET_POINTS, GET_CITIES } from "../actions/types";
+import { GET_CITIES, GET_POINTS } from "../actions/types";
 
 const initialState = {
   center: {
@@ -9,7 +9,7 @@ const initialState = {
   cities: [],
 };
 
-export default function getDataFromServerReducer(state = initialState, action) {
+export const getDataFromServerReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_POINTS:
       return {
@@ -22,4 +22,4 @@ export default function getDataFromServerReducer(state = initialState, action) {
     default:
       return state;
   }
-}
+};

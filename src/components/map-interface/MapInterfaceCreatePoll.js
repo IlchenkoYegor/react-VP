@@ -15,8 +15,8 @@ function MapInterfaceCreatePoll({ cityName, errors }) {
     [cityName]
   );
   return (
-    <Form onSubmit={onSubmitCreatePollCbk} className="text-center ">
-      <FormGroup>
+    <Form onSubmit={onSubmitCreatePollCbk}>
+      <FormGroup className="text-center d-flex flex-column">
         <button
           disabled={errors.pollingTimeout}
           className={classNames(

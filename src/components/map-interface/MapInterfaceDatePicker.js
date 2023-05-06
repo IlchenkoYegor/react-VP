@@ -26,7 +26,7 @@ function MapInterfaceDatePicker({ SelectedDate }) {
         valCon(value);
       }}
     >
-      <FormGroup>
+      <FormGroup className="d-flex flex-column justify-content-center">
         {" "}
         <DesktopDateTimePicker
           label="Pick the time of delivering"

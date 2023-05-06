@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
 import { authReducer } from "./authReducer";
-import errorReducer from "./errorReducer";
-import getDataFromServerReducer from "./getDataFromServerReducer";
+import { errorReducer } from "./errorReducer";
+import { getDataFromServerReducer } from "./getDataFromServerReducer";
 import { loadingReducer } from "./loadingReducer";
 import { mapReducer } from "./mapReducer";
 import { usersListReducer } from "./usersListReducer";

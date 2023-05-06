@@ -19,8 +19,11 @@ function MapInterfaceFindFittingPoints({
   );
 
   return (
-    <Form onSubmit={onSubmitMostFittingCbk} className=" text-center ">
-      <FormGroup>
+    <Form
+      onSubmit={onSubmitMostFittingCbk}
+      className="text-center d-flex flex-column"
+    >
+      <FormGroup className="text-center d-flex flex-column">
         <button
           className={classNames(
             "btn mt-3 ml-3 btn-secondary btn-lg fw-light ",

@@ -90,12 +90,14 @@ const GMap = ({
 
   const onMapClick = (e) => {
     e.domEvent.preventDefault();
-    console.log(e.latLng.lat(), e.latLng.lng());
+    //console.log(e.latLng.lat(), e.latLng.lng());
+    const lat = e.latLng.lat();
+    const lng = e.latLng.lng();
     dispatch(mainLoading(true));
-    geocode(e.latLng.lat(), e.latLng.lng())
+    geocode(lat, lng)
       .then((selectedCity) => {
         if (amountOfSelectedLocations < maxPoints && selectedCity == cityName) {
-          const latLong = e.latLng;
+          const latLong = { lat: lat, lng: lng };
           setLocation(latLong);
         } else {
           dispatch({
