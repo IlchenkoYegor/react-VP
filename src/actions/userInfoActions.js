@@ -1,6 +1,7 @@
 import axios from "axios";
+import { handleError } from "./errorActions";
 import { mainLoading } from "./loadingActions";
-import { GET_ERRORS, SET_USERS_ON_PAGE } from "./types";
+import { SET_USERS_ON_PAGE } from "./types";
 
 const GET_ALL_USERS_URL = "/admin/getAllUsers?page=";
 const BLOCK_USER_URL = "/admin/blockUser/";
@@ -14,7 +15,7 @@ export const upgradeUser = (username) => async (dispatch) => {
       newUserRole: "VOLUNTEER",
     });
   } catch (e) {
-    dispatch({ type: GET_ERRORS, payload: e.data });
+    dispatch(handleError(e));
     dispatch(mainLoading(false));
   }
 
@@ -27,7 +28,7 @@ export const downgradeUser = (username) => async (dispatch) => {
       deletedRole: "VOLUNTEER",
     });
   } catch (e) {
-    dispatch({ type: GET_ERRORS, payload: e.data });
+    dispatch(handleError(e));
     dispatch(mainLoading(false));
   }
 
@@ -38,7 +39,7 @@ export const blockUser = (username, blocking) => async (dispatch) => {
   try {
     await axios.patch(BLOCK_USER_URL + username, { isBlocked: blocking });
   } catch (e) {
-    dispatch({ type: GET_ERRORS, payload: e.data });
+    dispatch(handleError(e));
     dispatch(mainLoading(false));
   }
 
@@ -47,7 +48,11 @@ export const blockUser = (username, blocking) => async (dispatch) => {
 
 export const getAllUsers = (page) => async (dispatch) => {
   dispatch(mainLoading(true));
-  const data = await axios.get(GET_ALL_USERS_URL + page);
-  dispatch({ type: SET_USERS_ON_PAGE, payload: data.data });
+  try {
+    const data = await axios.get(GET_ALL_USERS_URL + page);
+    dispatch({ type: SET_USERS_ON_PAGE, payload: data.data });
+  } catch (e) {
+    dispatch(handleError(e));
+  }
   dispatch(mainLoading(false));
 };

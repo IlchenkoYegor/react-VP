@@ -1,5 +1,6 @@
 import React from "react";
 import { Container } from "react-bootstrap";
+import LoadingModalForLongActions from "../modal/LoadingModalForLongActions";
 import MapInterfaceAmountOfPointsSelector from "./MapInterfaceAmountOfPointsSelector";
 import MapInterfaceCreatePoll from "./MapInterfaceCreatePoll";
 import MapInterfaceDatePicker from "./MapInterfaceDatePicker";
@@ -18,6 +19,7 @@ export default function MapInterface() {
 
   return (
     <div>
+      <LoadingModalForLongActions></LoadingModalForLongActions>
       <Container>
         <MapInterfaceInfo></MapInterfaceInfo>
         <MapInterfaceSelectedCity></MapInterfaceSelectedCity>

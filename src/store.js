@@ -4,10 +4,11 @@ import rootReducer from "./reducers";
 
 const initialState = {};
 const middleware = [thunk];
+// eslint-disable-next-line no-undef
+const DEV = false;
 
 let store;
-
-if (window.navigator.userAgent.includes("Chrome")) {
+if (window.navigator.userAgent.includes("Chrome") && DEV === true) {
   store = createStore(
     rootReducer,
     initialState,

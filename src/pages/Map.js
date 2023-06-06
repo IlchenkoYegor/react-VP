@@ -3,11 +3,8 @@ import { Alert, Card, Col, Container, Row } from "react-bootstrap";
 import { connect } from "react-redux";
 import MapInterface from "../components/map-interface/MapInterface";
 import GMap from "../components/map/GMap";
-import { isNotEmpty } from "../isNotEmpty";
 
 function Map({ errors }) {
-  console.log(errors);
-  console.log(isNotEmpty(errors));
   return (
     <Card
       className="text-bg-info bg-gradient m-2"

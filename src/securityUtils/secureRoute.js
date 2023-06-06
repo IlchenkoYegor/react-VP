@@ -4,7 +4,6 @@ import { Navigate } from "react-router-dom";
 
 const SecureRoute = ({ requeredRole, role, children }) => {
   if (!role.includes(requeredRole) && !role.includes("ADMIN")) {
-    console.log("this is", role);
     return <Navigate to={"/"}></Navigate>;
   }
   return <>{children}</>;

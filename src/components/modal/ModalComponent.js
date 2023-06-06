@@ -7,7 +7,6 @@ export default function ModalComponent({ error }) {
   const [show, setShow] = useState(isNotEmpty(error));
 
   const handleClose = () => setShow(false);
-  //const handleShow = () => setShow(true);
 
   return (
     <>

@@ -25,7 +25,6 @@ function MapInterfaceAmountOfPointsSelector({
       <Card.Body>
         <Form>
           <Form.Group>
-            {/*   */}
             <Form.Range
               min={1}
               max={100}

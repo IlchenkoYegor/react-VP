@@ -3,11 +3,15 @@ import React, { useEffect, useState } from "react";
 import { Spinner } from "react-bootstrap";
 import { connect, useDispatch } from "react-redux";
 import useSupercluster from "use-supercluster";
+import { handleError } from "../../actions/errorActions";
 import { geocode } from "../../actions/geocodingActions";
 import { getAllPointsByCity } from "../../actions/getPointsFromServerActions";
 import { mainLoading } from "../../actions/loadingActions";
-import { deleteLocation, setLocation } from "../../actions/mapActions";
-import { GET_ERRORS } from "../../actions/types";
+import {
+  deleteLocation,
+  setLocation,
+  setMaxLocationsAmount,
+} from "../../actions/mapActions";
 import useInterval from "../../hooks";
 import CitizenLocationMarker from "../marker/CitizenLocationMarker";
 import ClusterMarker from "../marker/ClusterMarker";
@@ -15,6 +19,12 @@ import SelectedLocationMarker from "../marker/SelectedLocationMarker";
 import s from "./Map.module.css";
 // eslint-disable-next-line no-undef
 const API_KEY = process.env.REACT_APP_API_KEY;
+
+const POINTS_AMOUNT_ERROR_MSG =
+  "Careful! Amount of selected and indicated points must match!";
+
+const LOCATION_MISMATCH_ERROR_MSG =
+  "Careful! Selected point is not situated in specified city!";
 
 const containerStyle = {
   width: "100%",
@@ -32,26 +42,24 @@ const GMap = ({
   maxPoints,
   cityName,
 }) => {
-  //[])
   const [bounds, setBounds] = useState([]);
   const [zoom, setZoom] = useState(10);
-  console.log(amountOfPoints);
   const { isLoaded } = useJsApiLoader({
     id: "google-map-script",
     googleMapsApiKey: API_KEY,
   });
+  const dispatch = useDispatch();
   const mapRef = React.useRef(undefined);
-  //const zoomRef = React.useRef(null);
-  useEffect(onBoundsChangedHandler, [zoom]);
+
+  useEffect(onBoundsChangedHandler, [zoom, mapRef.current]);
   const onLoad = React.useCallback(function callback(map) {
     mapRef.current = map;
   }, []);
 
   const onUnmount = React.useCallback(function callback() {
+    dispatch(setMaxLocationsAmount(0));
     mapRef.current = undefined;
   }, []);
-
-  const dispatch = useDispatch();
 
   const useFetching = (e) =>
     useEffect(() => {
@@ -61,8 +69,6 @@ const GMap = ({
   useInterval(() => {
     dispatch(getAllPointsByCity(cityName, amountOfPoints));
   }, DELAY_INTERVAL);
-  // eslint-disable-next-line no-unused-vars
-  const onZoomChangedHdl = () => {};
 
   const { clusters } = useSupercluster({
     points: locationCoordinates,
@@ -73,11 +79,8 @@ const GMap = ({
       maxZoom: 20,
     },
   });
-  //  console.log(center);
-
-  // console.log(cityName)
   function onBoundsChangedHandler() {
-    if (mapRef.current) {
+    if (mapRef.current && mapRef.current.getBounds()) {
       const ne = mapRef.current.getBounds().getNorthEast();
       const sw = mapRef.current.getBounds().getSouthWest();
       setBounds(() => {
@@ -85,41 +88,33 @@ const GMap = ({
       });
     }
   }
-
-  //console.log(clusters);
-
   const onMapClick = (e) => {
     e.domEvent.preventDefault();
-    //console.log(e.latLng.lat(), e.latLng.lng());
     const lat = e.latLng.lat();
     const lng = e.latLng.lng();
     dispatch(mainLoading(true));
     geocode(lat, lng)
       .then((selectedCity) => {
-        if (amountOfSelectedLocations < maxPoints && selectedCity == cityName) {
+        if (
+          amountOfSelectedLocations < maxPoints &&
+          selectedCity === cityName
+        ) {
           const latLong = { lat: lat, lng: lng };
           setLocation(latLong);
+        } else if (selectedCity !== cityName) {
+          dispatch(handleError(null, LOCATION_MISMATCH_ERROR_MSG));
         } else {
-          dispatch({
-            type: GET_ERRORS,
-            payload: {
-              data: "you cannot add more points than you have set",
-            },
-          });
+          dispatch(handleError(null, POINTS_AMOUNT_ERROR_MSG));
         }
         dispatch(mainLoading(false));
       })
-      .catch((jej) => {
-        console.log(jej);
+      .catch(() => {
         dispatch(mainLoading(false));
       });
-    //console.log("selected city", selectedCity);
   };
-  // eslint-disable-next-line no-undef
   const onMarkerClick = (coordinates) => {
     dispatch(deleteLocation(coordinates));
   };
-  // eslint-disable-next-line no-constant-condition
   return isLoaded ? (
     <div className={s.container}>
       <GoogleMap
@@ -129,15 +124,13 @@ const GMap = ({
         onZoomChanged={() => {
           mapRef.current && setZoom(mapRef.current.getZoom());
         }}
-        //onBoundsChanged=
         onDragEnd={onBoundsChangedHandler}
-        onLoad={onLoad}
+        onLoad={(e) => {
+          onLoad(e);
+        }}
         onUnmount={onUnmount}
         onClick={onMapClick}
       >
-        {/* Child components, such as markers, info windows, etc.  onClick1={deleteLocation}*/}
-        <></>
-        {/* <CitizenLocationMarker position1={}></CitizenLocationMarker> */}
         {clusters.map((cluster, id) => {
           const [lng, lat] = cluster.geometry.coordinates;
           const { cluster: isCluster, point_count: pointCount } =

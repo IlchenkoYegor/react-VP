@@ -6,18 +6,15 @@ import { connect, useDispatch } from "react-redux";
 import { setTimeOfAidDelivering } from "../../actions/mapActions";
 
 function MapInterfaceDatePicker({ SelectedDate }) {
-  //const todayAtNoon = dayjs().set("hour", 12).startOf("hour");
   const dispatch = useDispatch();
   const date = new Date();
   date.setDate(date.getDate() + 1);
   const todayAt9AM = dayjs(date).set("hour", 8);
   const today = dayjs(Date.now());
   const valCon = (value) => {
-    console.log(value);
     dispatch(setTimeOfAidDelivering(value));
   };
   const [value, setValue] = useState(dayjs(Date.now()).toISOString());
-  //console.log(value);
   return (
     <Form
       className="text-center mt-3"

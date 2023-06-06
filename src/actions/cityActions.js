@@ -1,6 +1,6 @@
 import axios from "axios";
+import { handleError } from "./errorActions";
 import { mainLoading } from "./loadingActions";
-import { GET_ERRORS } from "./types";
 
 export const addCityInfo = (navigate, city) => async (dispatch) => {
   dispatch(mainLoading(true));
@@ -8,11 +8,7 @@ export const addCityInfo = (navigate, city) => async (dispatch) => {
     await axios.post("/admin/addCity", city);
     navigate("/main");
   } catch (e) {
-    dispatch({
-      type: GET_ERRORS,
-      payload: e.response.data,
-    });
-    console.log(e.response);
+    dispatch(handleError(e));
   }
   dispatch(mainLoading(false));
 };

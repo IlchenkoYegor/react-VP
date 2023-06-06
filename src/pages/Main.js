@@ -2,9 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import AuthorizedMainPage from "../components/main/AuthorizedMainPage";
 import { default as UnauthorizedMainPage } from "../components/main/UnauthorizedMainPage";
-{
-  /*style={{ width: "50em" }}*/
-}
+
 function Main({ security }) {
   // eslint-disable-next-line no-unused-vars
   const { validToken, user } = security;

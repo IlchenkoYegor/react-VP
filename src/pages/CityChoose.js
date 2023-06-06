@@ -10,20 +10,13 @@ function CityChoose({ cities, cityName, username }) {
   const useFetching = (e) =>
     useEffect(() => {
       dispatch(e());
-      //console.log(cities)
       if (cities[0]) {
-        //  dispatch( e2(cities[0]));
         setSelectedCity(0);
       }
-      //console.log(cities);
     }, [JSON.stringify(cities)]);
-  console.log(JSON.stringify(selectedCity));
   useFetching(getAllCities, getCityData);
   const setSelectedCityCbk = useCallback(
     (e) => {
-      console.log(toString(e));
-
-      // console.log(first);
       dispatch(getCityData(username, cities[e]));
     },
     [JSON.stringify(cities)]

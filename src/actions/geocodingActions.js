@@ -1,14 +1,6 @@
 import axios from "axios";
 
-// eslint-disable-next-line no-undef
-
-// eslint-disable-next-line no-undef
-//let geocoder = new google.maps.Geocoder();
-
 export const geocode = async (lat, lng) => {
-  //   geocoder.geocode({ location: latlng }).then((response) => {
-  //     console.log(response.results[0].formatted_address);
-  //   });
   let lct = lat + ", " + lng;
 
   const options = {
@@ -25,7 +17,6 @@ export const geocode = async (lat, lng) => {
   };
   try {
     const response = await axios.request(options);
-    console.log(response.data.results[2].locality);
     return response.data.results[2].locality;
   } catch (er) {
     return "";

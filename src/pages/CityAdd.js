@@ -22,7 +22,6 @@ function CityAdd({ errors }) {
           area: citySquare,
         })
       );
-      console.log(cityCenter);
     },
     [cityName, cityCenter, citySquare]
   );

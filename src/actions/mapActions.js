@@ -1,13 +1,13 @@
 import axios from "axios";
 import dayjs from "dayjs";
-import { mainLoading } from "./loadingActions";
+import { handleError } from "./errorActions";
+import { longLoading } from "./loadingActions";
 import {
   DELETE_SUITABLE_POINT,
   GET_BEST_SUITABLE_POINTS,
   GET_ERRORS,
   SET_CITY,
   SET_MAX_AMOUNT_OF_POINTS,
-  SET_NO_ERRORS,
   SET_SUITABLE_POINTS,
   SET_TIME_OF_DELIVERING,
   SUCCESS_MESSAGE,
@@ -17,8 +17,15 @@ import {
 // eslint-disable-next-line no-undef
 const DELAYINMS = process.env.REACT_APP_API_KEY;
 
+const POLL_MESSAGE_TEXT =
+  "CREATING THE POLL... PLEASE WAIT! YOU WILL KNOW WHEN IT ENDS!";
+const BEST_POINTS_TEXT =
+  "FINDING THE BEST POINTS... PLEASE WAIT! YOU WILL SEE THEM AS SOON AS IT ENDS!";
+const SEND_MESSAGE_TEXT =
+  "SENDING THE LOCATION YOU HAVE PICKED... PLEASE WAIT! AFTER THIS WINDOW CLOSES ALL OF THEM WILL BE INFORMED!";
+
 export const createPoll = (cityName) => async (dispatch) => {
-  dispatch(mainLoading(true));
+  dispatch(longLoading(true, POLL_MESSAGE_TEXT));
   try {
     const res = await axios.get("/admin/sendMessage", {
       params: { city: cityName },
@@ -32,33 +39,19 @@ export const createPoll = (cityName) => async (dispatch) => {
       payload: DELAYINMS,
     });
   } catch (err) {
-    dispatch({
-      type: GET_ERRORS,
-      payload: err.response.data,
-    });
-
-    new Promise((resolve) => {
-      setTimeout(() => resolve(), 5000);
-    }).then(() => {
-      dispatch({
-        type: SET_NO_ERRORS,
-      });
-    });
+    dispatch(handleError(err));
   }
-  dispatch(mainLoading(false));
+  dispatch(longLoading(false));
 };
 
 export const pushTheResult =
   (coordinatesList, username, city, amountOfPoints, timeOfDelivering) =>
   async (dispatch) => {
-    console.log(coordinatesList);
-    dispatch(mainLoading(true));
+    dispatch(longLoading(true, SEND_MESSAGE_TEXT));
     try {
-      console.log(coordinatesList);
       const newList = coordinatesList.map((e) => {
         return { longitude: e.lng, latitude: e.lat };
       });
-      console.log(newList);
       const res = await axios.post("/admin/sendLocation", {
         adminUsername: username,
         coordinatesList: newList,
@@ -71,21 +64,9 @@ export const pushTheResult =
         payload: res.data,
       });
     } catch (err) {
-      console.log(err);
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data,
-      });
-
-      new Promise((resolve) => {
-        setTimeout(() => resolve(), 5000);
-      }).then(() => {
-        dispatch({
-          type: SET_NO_ERRORS,
-        });
-      });
+      dispatch(handleError(err));
     }
-    dispatch(mainLoading(false));
+    dispatch(longLoading(false));
   };
 
 export const setLocation = (locationCoordinates) => {
@@ -132,22 +113,12 @@ export const setMaxLocationsAmount =
         payload: amountOfLocations,
       });
     } catch (err) {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err,
-      });
-      new Promise((resolve) => {
-        setTimeout(() => resolve(), 5000);
-      }).then(() => {
-        dispatch({
-          type: SET_NO_ERRORS,
-        });
-      });
+      dispatch(handleError(err));
     }
   };
 export const getBestFittingPoints =
   (amountOfPoints, cityName) => async (dispatch) => {
-    dispatch(mainLoading(true));
+    dispatch(longLoading(true, BEST_POINTS_TEXT));
     try {
       const res = await axios.get("/admin/getBestPoints", {
         params: { amountOfPoints: amountOfPoints, cityName: cityName },
@@ -160,23 +131,12 @@ export const getBestFittingPoints =
         payload: newRes,
       });
     } catch (err) {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data,
-      });
-      new Promise((resolve) => {
-        setTimeout(() => resolve(), 5000);
-      }).then(() => {
-        dispatch({
-          type: SET_NO_ERRORS,
-        });
-      });
+      dispatch(handleError(err));
     }
-    dispatch(mainLoading(false));
+    dispatch(longLoading(false));
   };
 
 export const getCityData = (username, city) => {
-  console.log(city);
   if (!city || !city.name) {
     return {
       type: GET_ERRORS,
@@ -188,10 +148,7 @@ export const getCityData = (username, city) => {
     username: username,
     city: city.name,
   };
-  console.log(citydata);
   axios.patch("/admin/resetCity", citydata);
-  console.log(city.name);
-  console.log(city);
   const normilizedSelectedCity = {
     name: city.name,
     area: city.area,
@@ -214,7 +171,6 @@ export const getCityData = (username, city) => {
 };
 
 export const initCityData = (city) => async (dispatch) => {
-  console.log(city);
   if (!city) {
     return {
       type: GET_ERRORS,
@@ -224,8 +180,6 @@ export const initCityData = (city) => async (dispatch) => {
 
   axios.get("/admin/getCity?city=" + city).then((res) => {
     city = res.data;
-    console.log(city.name);
-    console.log(city);
     const normilizedSelectedCity = {
       name: city.name,
       area: city.area,
@@ -240,10 +194,7 @@ export const initCityData = (city) => async (dispatch) => {
         payload: normilizedSelectedCity,
       });
     } catch (err) {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err,
-      });
+      dispatch(handleError(err));
     }
   });
 };

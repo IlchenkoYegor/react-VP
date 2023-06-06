@@ -42,13 +42,6 @@ function Register({ errors, createNewUser }) {
       repeatPassword: confirmPassword,
     };
     createNewUser(register, navigate);
-    // let options = {headers: {
-    //     "Content-Type": "application/json"
-    // }}
-
-    //let result = axios.post("http://localhost:8080/api/user/register", register, options);
-    // result.then(e => {console.log("all is ok "+ e.data)
-    //                   }).catch(e => console.log("Error"+ e))
   };
 
   function validateAndSetPassword(e) {

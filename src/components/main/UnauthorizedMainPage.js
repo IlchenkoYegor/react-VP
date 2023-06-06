@@ -26,8 +26,6 @@ export default function UnauthorizedMainPage() {
               onLoad={isLoaded}
             ></Card.Img>
             <div
-              // eslint-disable-next-line no-undef
-              //src={`${process.env.PUBLIC_URL}/assets/delivery-truck-goods-publicdomainvectors.org.svg`}
               style={{ display: loading ? "block" : "none", height: "50em" }}
             >
               <Skeleton

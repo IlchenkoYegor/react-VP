@@ -2,6 +2,7 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { GET_ERRORS, SET_CURRENT_USER } from "../actions/types";
 import setJWTToken from "../securityUtils/setJWTToken";
+import { handleError } from "./errorActions";
 import { initCityData } from "./mapActions";
 
 export const createNewUser = (newUser, navigate) => async (dispatch) => {
@@ -13,17 +14,7 @@ export const createNewUser = (newUser, navigate) => async (dispatch) => {
       payload: {},
     });
   } catch (err) {
-    if (err.response && err.response.data) {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data,
-      });
-    } else {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.message,
-      });
-    }
+    dispatch(handleError(err));
   }
 };
 
@@ -37,30 +28,15 @@ export const loginByCrid = (crident, navigate) => async (dispatch) => {
     });
     const { token } = res.data;
     localStorage.setItem("jwtToken", token);
-
-    //sessionStorage.setItem("city", );
     setJWTToken(token);
     const decoded = jwtDecode(token);
-    console.log(decoded.city);
-
     if (decoded.city) {
       localStorage.setItem("city", decoded.city);
       dispatch(initCityData(decoded.city));
-      //dispatch(initCityData(decoded.city));
     }
     dispatch({ type: SET_CURRENT_USER, payload: decoded });
   } catch (err) {
-    if (err.response && err.response.data) {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.response.data,
-      });
-    } else {
-      dispatch({
-        type: GET_ERRORS,
-        payload: err.message,
-      });
-    }
+    dispatch(handleError(err));
   }
 };
 

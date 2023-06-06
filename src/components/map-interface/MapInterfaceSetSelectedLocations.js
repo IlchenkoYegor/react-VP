@@ -2,8 +2,8 @@ import classNames from "classnames";
 import React, { useCallback } from "react";
 import { Form, FormGroup, Spinner } from "react-bootstrap";
 import { connect, useDispatch } from "react-redux";
+import { handleError } from "../../actions/errorActions";
 import { pushTheResult } from "../../actions/mapActions";
-import { GET_ERRORS } from "../../actions/types";
 import { Timer } from "../Timer";
 
 function MapInterfaceSetSelectedLocations({
@@ -19,34 +19,40 @@ function MapInterfaceSetSelectedLocations({
   const onSubmitPushResultCbk = useCallback(
     function onSubmitPushTheResult(e) {
       e.preventDefault();
-      if (maxAmountOfPoints != amountOfCurrentSelected) {
-        dispatch({
-          type: GET_ERRORS,
-          payload: {
-            pointsNotSelectedError:
-              "amount of actually selected points is not equal the one you have indicated above",
-          },
-        });
-        return;
-      } else if (!timeOfDelivering || timeOfDelivering < Date.now()) {
-        dispatch({
-          type: GET_ERRORS,
-          payload: {
-            timeOfDeliveringError:
-              "You didn`t enter the time of aid delivering",
-          },
-        });
-        return;
+      try {
+        if (maxAmountOfPoints != amountOfCurrentSelected) {
+          dispatch(handleError({}));
+          throw {
+            response: {
+              data: {
+                pointsNotSelectedError:
+                  "amount of actually selected points is not equal the one you have indicated above",
+              },
+            },
+          };
+        } else if (!timeOfDelivering || timeOfDelivering < Date.now()) {
+          throw {
+            response: {
+              data: {
+                pointsNotSelectedError:
+                  "You didn`t enter the time of aid delivering",
+              },
+            },
+          };
+        }
+
+        dispatch(
+          pushTheResult(
+            selectedLocations,
+            username,
+            cityName,
+            maxAmountOfPoints,
+            timeOfDelivering
+          )
+        );
+      } catch (e) {
+        dispatch(handleError(e));
       }
-      dispatch(
-        pushTheResult(
-          selectedLocations,
-          username,
-          cityName,
-          maxAmountOfPoints,
-          timeOfDelivering
-        )
-      );
     },
     [
       selectedLocations,

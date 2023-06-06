@@ -15,8 +15,6 @@ import { useNavigate } from "react-router-dom";
 import { loginByCrid } from "../actions/securityActions";
 import { isNotEmpty } from "../isNotEmpty";
 
-//const HOSTA = "http://localhost:8080";
-
 function Login({ errors, loginByCrid }) {
   const navigate = useNavigate();
   const [username, setUsername] = useState();
